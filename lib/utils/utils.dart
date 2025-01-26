@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 
 class Util{
@@ -25,11 +26,11 @@ class Util{
 
 
 
-  // static toastMessage(String message){
-  //   Fluttertoast.showToast(msg: message,
-  //     backgroundColor: Colors.black,
-  //     textColor: Colors.white,
-  //   );}
+  static toastMessage(String message){
+    Fluttertoast.showToast(msg: message,
+      backgroundColor: Colors.black,
+      textColor: Colors.white,
+    );}
 
   //
   // static flushBarErrorMessage(String message , BuildContext context){
@@ -59,4 +60,19 @@ class Util{
   //           content: Text(message))
   //   );
   // }
+
+static String? patientMobility;
+static String? patientgender;
+static String? patientage;
+static String? hospitalname;
+static String? patientContact;
+static String? patientLocation;
+static String? assistType;
+static String? location;
+static String? startDate;
+static String? time;
+static String? daysWeek;
+static String? hospitalLocation;
+static String? pickupType;
+static String? requirements;
 }

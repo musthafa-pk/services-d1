@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:services/constants/constants.dart';
 import 'package:services/utils/utils.dart';
 import 'package:services/views/age.dart';
 
 class Gender extends StatefulWidget {
   String type;
-  Gender({required this.type, super.key});
+  String? mobility;
+  Gender({required this.type,this.mobility, super.key});
 
   @override
   State<Gender> createState() => _GenderState();
@@ -52,11 +54,20 @@ class _GenderState extends State<Gender> {
                     ),
                   );
                 },
-                child: CircleAvatar(
-                  radius: 100,
-                  backgroundColor:
-                  selectedGender == 'Male' ? Colors.blue : Colors.grey[300], // Highlight if selected
-                  child: Image.asset('assets/images/male.png'),
+                child: Container(
+                  padding: const EdgeInsets.all(4), // Border width
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: selectedGender == 'Male' ? primaryColor : Colors.grey, // Dynamic border color
+                      width: 1, // Border thickness
+                    ),
+                  ),
+                  child: CircleAvatar(
+                    radius: 100,
+                    backgroundColor: Colors.grey[300],
+                    foregroundImage: const AssetImage('assets/images/male.png'), // Use foregroundImage for the image
+                  ),
                 ),
               ),
               Padding(
@@ -87,12 +98,20 @@ class _GenderState extends State<Gender> {
                     ),
                   );
                 },
-                child: CircleAvatar(
-                  radius: 100,
-                  backgroundColor: selectedGender == 'Female'
-                      ? Colors.pink
-                      : Colors.grey[300], // Highlight if selected
-                  child: Image.asset('assets/images/female.png'),
+                child: Container(
+                  padding: const EdgeInsets.all(4), // Border width
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: selectedGender == 'Female' ? Colors.pink : primaryColor, // Dynamic border color
+                      width: 1, // Border thickness
+                    ),
+                  ),
+                  child: CircleAvatar(
+                    radius: 100,
+                    backgroundColor: Colors.grey[300],
+                    foregroundImage: const AssetImage('assets/images/female.png'), // Use foregroundImage for the image
+                  ),
                 ),
               ),
               Padding(

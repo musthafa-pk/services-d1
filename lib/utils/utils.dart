@@ -32,6 +32,12 @@ class Util{
       textColor: Colors.white,
     );}
 
+  static String formatTimeOfDay(TimeOfDay time) {
+    final hour = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod; // Convert 0 hour to 12 for AM/PM
+    final period = time.period == DayPeriod.am ? "AM" : "PM";
+    return "${hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')} $period";
+  }
+
   //
   // static flushBarErrorMessage(String message , BuildContext context){
   //   showFlushbar(context: context,
@@ -61,18 +67,4 @@ class Util{
   //   );
   // }
 
-static String? patientMobility;
-static String? patientgender;
-static String? patientage;
-static String? hospitalname;
-static String? patientContact;
-static String? patientLocation;
-static String? assistType;
-static String? location;
-static String? startDate;
-static String? time;
-static String? daysWeek;
-static String? hospitalLocation;
-static String? pickupType;
-static String? requirements;
 }

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:services/Dr1/DroneHomePage.dart';
+import 'package:services/Dr1/LoginPage.dart';
+import 'package:services/Dr1/bottomBar.dart';
 import 'package:services/constants/constants.dart';
 import 'package:services/homePage.dart';
 import 'package:services/menuPage.dart';
@@ -23,10 +26,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: primaryColor),
         useMaterial3: true,
-        fontFamily: 'AeonikTRIAL-Bold.otf'
+        fontFamily: 'AeonikTRIAL'
       ),
       // home:Homepage()
-      home:Menupage()
+      home:DroneLoginpage()
+      // home:DroneBottomNavigation()
     );
   }
 }

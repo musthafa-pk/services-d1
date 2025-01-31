@@ -13,8 +13,27 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Additional extends StatefulWidget {
+  String type;
   final String? selectedType;
-  Additional({this.selectedType, super.key});
+  String? age;
+  String? gender;
+  DateTime? basicDate;
+  String? dayNight;
+  String? gen_speci;
+  String? mobility;
+  String? location;
+
+  Additional({
+    required this.type,
+    this.selectedType,
+    this.age,
+    this.gender,
+    this.basicDate,
+    this.dayNight,
+    this.gen_speci,
+    this.mobility,
+    this.location,
+    super.key});
   @override
   _AdditionalState createState() => _AdditionalState();
 }
@@ -63,31 +82,37 @@ class _AdditionalState extends State<Additional> {
   Future<void> uploaddata() async {
     // URL of your backend APIS
     String url = AppUrl.addhomeservice;
-    // final url = Uri.parse('http://yourapiurl.com/api/patient'); // Replace with your API URL
+    final url2 = AppUrl.hospitalasistenquiryData; // Replace with your API URL
 
     // Patient data to send
     SharedPreferences preferences = await SharedPreferences.getInstance();
     int? userID = preferences.getInt('user_id');
-    final Map<String, dynamic> userData1 = {
+    String? userName = preferences.getString('userName');
+    String? userPhone = preferences.getString('userPhone');
+    final Map<String, dynamic> homeData = {
       "id": userID,
-      "patient_mobility": Util.patientMobility,
-      "patient_name": "Aswathi",
-      "patient_age": "25",
-      "paitent_gender": "female",
-      "patient_contact_no": "9845621457",
-      "days_week": "days",
-      "general_specialized": "general"
+      "patient_mobility":"${widget}",
+      "patient_name": "${userName}",
+      "patient_age": "${int.parse(widget.age.toString())}",
+      "paitent_gender": "${widget.gender}",
+      "patient_contact_no": "${userPhone}",
+      "patient_location":"${widget.location}",
+      "start_date":"${widget.basicDate}",
+      "days_week": "${widget.dayNight}",
+      "general_specialized": "${widget.gen_speci}",
+    "requirements":"${_requirementsController.text}",
+    "documents":"$_selectedFile"
     };
 
-    final Map<String,dynamic> usersData2 = {
+    final Map<String,dynamic> hospitalData = {
     "id":userID,
     "type":"",
-    "patient_mobility":Util.patientMobility,
-    "patient_name":"",
-    "patient_age":Util.patientage,
-    "paitent_gender":Util.patientgender,
+    "patient_mobility":"${widget.mobility}",
+    "patient_name":"${userName}",
+    "patient_age":"${widget.age}",
+    "paitent_gender":"${widget.gender}",
     "hospital_name":"",
-    "patient_contact_no":"",
+    "patient_contact_no":"${userPhone}",
     "patient_location":"",
     "assist_type":"",
     "location":"",
@@ -96,8 +121,8 @@ class _AdditionalState extends State<Additional> {
     "days_week":"",
     "hospital_location":"",
     "pickup_type":"",
-    "requirements":"",
-    "documents": "https://docs.google.com/spreadsheets/d/1vi39yAccAIFZY0y5mEUVgayHIRwh73Wrcet41SJTJVY/edit?gid=0#gid=0"
+    "requirements":"${_requirementsController.text}",
+    "documents": "$_selectedFile"
     };
 
     try {
@@ -107,7 +132,7 @@ class _AdditionalState extends State<Additional> {
         headers: {
           'Content-Type': 'application/json', // Set content type to JSON
         },
-        body: json.encode(userData1), // Convert the Map to JSON
+        body: json.encode(homeData), // Convert the Map to JSON
       );
 
       // Check the response status
@@ -115,6 +140,8 @@ class _AdditionalState extends State<Additional> {
         // Successful response
         print('Patient data successfully sent!');
         print('Response: ${response.body}');
+        var responseData = jsonDecode(response.body);
+        Util.toastMessage('${responseData['message']}');
       } else {
         // Failed request
         print('Failed to send data. Status code: ${response.statusCode}');

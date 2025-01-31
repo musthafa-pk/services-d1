@@ -4,9 +4,12 @@ import 'package:services/views/additional.dart';
 import '../constants/constants.dart';
 
 class LocationTimingPage extends StatefulWidget {
+  String type;
   String? delivryType;
+  String? age;
+  String? gender;
 
-  LocationTimingPage({required this.delivryType});
+  LocationTimingPage({required this.type,required this.delivryType,this.age,this.gender,super.key});
 
   @override
   _LocationTimingPageState createState() => _LocationTimingPageState();
@@ -79,7 +82,9 @@ class _LocationTimingPageState extends State<LocationTimingPage> {
             // Skip Button
             ElevatedButton(
               onPressed: () {
-               Navigator.push(context, MaterialPageRoute(builder: (context) => Additional(selectedType: 'Specialized',),));
+               Navigator.push(context, MaterialPageRoute(builder: (context) => Additional(
+                 type: widget.type,
+                 selectedType: 'Specialized',age: widget.age,gender: widget.gender,),));
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: primaryColor,

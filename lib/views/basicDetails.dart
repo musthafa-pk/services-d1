@@ -4,7 +4,10 @@ import 'package:services/views/physiotherapy/addPatientLocation.dart';
 
 class BasicDetailsPage extends StatefulWidget {
   String type;
-   BasicDetailsPage({required this.type,Key? key}) : super(key: key);
+  String? age;
+  String? mobility;
+  String? gender;
+   BasicDetailsPage({required this.type,this.age,this.gender,this.mobility,Key? key}) : super(key: key);
 
   @override
   State<BasicDetailsPage> createState() => _BasicDetailsPageState();
@@ -13,6 +16,7 @@ class BasicDetailsPage extends StatefulWidget {
 class _BasicDetailsPageState extends State<BasicDetailsPage> {
   String? selectedAvailability;
   String? selectedType;
+  DateTime? date;
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +95,9 @@ class _BasicDetailsPageState extends State<BasicDetailsPage> {
                     lastDate: DateTime(2100),
                   ).then((selectedDate) {
                     if (selectedDate != null) {
-                      // Handle selected date
+                      setState(() {
+                        date = selectedDate;
+                      });
                     }
                   });
                 },
@@ -117,7 +123,7 @@ class _BasicDetailsPageState extends State<BasicDetailsPage> {
                         ),
                         child: const Center(
                           child: Text(
-                            'Day',
+                            'Day/Night',
                             style: TextStyle(
                               color: Colors.black,
                               fontSize: 16,
@@ -174,7 +180,7 @@ class _BasicDetailsPageState extends State<BasicDetailsPage> {
                           color: selectedType == 'General'
                               ? primaryColor2
                               : Colors.white,
-                          border: Border.all(color: Colors.pink),
+                          border: Border.all(color:primaryColor),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Center(
@@ -227,8 +233,14 @@ class _BasicDetailsPageState extends State<BasicDetailsPage> {
                   onPressed: () {
                     // Handle Next button click
                     if(widget.type == 'A'){
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => AddPatientLocationPage(type: widget.type,
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => AddPatientLocationPage(
+                        type: widget.type,
                         selectedType: selectedType,
+                        age: widget.age,
+                        basicDate: date,
+                        gender: widget.gender,
+                        dayNight: selectedAvailability,
+                        gen_speci: selectedType,
                       ),));
                     }
                   },

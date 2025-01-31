@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:services/Dr1/Labs.dart';
+import 'package:services/Dr1/Medicine.dart';
+import 'package:services/Dr1/bottomBar.dart';
+import 'package:services/Dr1/myOrders.dart';
 import 'package:services/constants/constants.dart';
 import 'package:services/homePage.dart';
 
@@ -37,7 +41,16 @@ class _MenupageState extends State<Menupage> {
                 Navigator.push(context, MaterialPageRoute(builder: (context) => Homepage(type: 'C',),));
               },
                 child: Icon(Icons.run_circle,size: 80,color: primaryColor,)),
-            Text('Physiotherapist',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 28),)
+            Text('Physiotherapist',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 28),),
+
+            Padding(
+              padding: const EdgeInsets.only(top: 20.0),
+              child: InkWell(
+                onTap: (){
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => DroneBottomNavigation(),));
+                },
+                  child: Text('Take to Doctor One',style: TextStyle(fontWeight: FontWeight.bold,color: primaryColor),)),
+            )
           ],
         )
       ),

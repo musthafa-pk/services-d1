@@ -8,7 +8,7 @@
 7.Addtional -- ok
 8.final page -- ok
 ////////////////////
-api 1: --
+api 1: -- ok
 api 2:
       hospital assistance(B)
 1.home page -- ok
@@ -20,7 +20,7 @@ api 2:
 7.hospital assist -- ok
 8.additional -- ok
 9.final page -- ok
-api 1: --
+api 1: -- ok
 api 2:
        Physiotherapist(C) -- OK
 // 1.home page -- ok
@@ -29,5 +29,5 @@ api 2:
 // 4.location -- ok
 //5.details -- ok
 //6.final page -- ok
-api1: --
+api1: -- ok
 api2: --

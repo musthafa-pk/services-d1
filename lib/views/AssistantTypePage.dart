@@ -4,7 +4,20 @@ import 'package:services/views/mobility.dart';
 
 class AssistantTypePage extends StatefulWidget {
   String type;
-  AssistantTypePage({required this.type,super.key});
+  String? age;
+  String? gender;
+  String? selectedType;
+  String? selectedDuration;
+
+  AssistantTypePage({
+    required this.type,
+    this.gender,
+    this.age,
+    this.selectedType,
+    this.selectedDuration,
+    super.key,
+  });
+
   @override
   State<AssistantTypePage> createState() => _AssistantTypePageState();
 }
@@ -12,23 +25,42 @@ class AssistantTypePage extends StatefulWidget {
 class _AssistantTypePageState extends State<AssistantTypePage> {
   String? selectedType;
   String? selectedDuration;
+  double customDays = 1; // Default value for the slider
+
+  @override
+  void initState() {
+    super.initState();
+    selectedType = widget.selectedType;
+    selectedDuration = widget.selectedDuration;
+  }
+
+  void navigateToNextPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PatientMobilityPage(
+          type: widget.type,
+          age: widget.age,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        automaticallyImplyLeading: true, // Adds the back button
+        automaticallyImplyLeading: true,
         backgroundColor: Colors.white,
         elevation: 0,
-        iconTheme: IconThemeData(color: Colors.black), // Customize back button color
+        iconTheme: IconThemeData(color: Colors.black),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 40),
             const Text(
               "Choose\nAssistant Type",
               style: TextStyle(
@@ -41,8 +73,9 @@ class _AssistantTypePageState extends State<AssistantTypePage> {
               onTap: () {
                 setState(() {
                   selectedType = "Out Patient";
-                  selectedDuration = null; // Reset duration for Out Patient
+                  selectedDuration = null;
                 });
+                navigateToNextPage();
               },
               child: Container(
                 decoration: BoxDecoration(
@@ -69,7 +102,7 @@ class _AssistantTypePageState extends State<AssistantTypePage> {
                     ),
                     SizedBox(height: 8),
                     Text(
-                      "Medical care or treatment that does not require an overnight stay at a hospital or medical facility.",
+                      "Medical care or treatment that does not require an overnight stay.",
                       style: TextStyle(fontSize: 14),
                     ),
                   ],
@@ -81,7 +114,7 @@ class _AssistantTypePageState extends State<AssistantTypePage> {
               onTap: () {
                 setState(() {
                   selectedType = "In Patient";
-                  selectedDuration = null; // Reset duration for new selection
+                  selectedDuration = null;
                 });
               },
               child: Container(
@@ -109,7 +142,7 @@ class _AssistantTypePageState extends State<AssistantTypePage> {
                     ),
                     SizedBox(height: 8),
                     Text(
-                      "Medical care or treatment that does not require an overnight stay at a hospital or medical facility.",
+                      "Medical care or treatment requiring a hospital stay.",
                       style: TextStyle(fontSize: 14),
                     ),
                   ],
@@ -126,6 +159,7 @@ class _AssistantTypePageState extends State<AssistantTypePage> {
                       setState(() {
                         selectedDuration = "2 Days";
                       });
+                      navigateToNextPage();
                     },
                     child: Container(
                       decoration: BoxDecoration(
@@ -155,6 +189,7 @@ class _AssistantTypePageState extends State<AssistantTypePage> {
                       setState(() {
                         selectedDuration = "3 Days";
                       });
+                      navigateToNextPage();
                     },
                     child: Container(
                       decoration: BoxDecoration(
@@ -211,33 +246,48 @@ class _AssistantTypePageState extends State<AssistantTypePage> {
                 ],
               ),
             ],
-            const SizedBox(height: 40),
-            ElevatedButton(
-              onPressed: selectedType != null &&
-                  (selectedType == "Out Patient" ||
-                      selectedDuration != null)
-                  ? () {
-                // Handle "Next" button tap
-                Navigator.push(context, MaterialPageRoute(builder: (context) => PatientMobilityPage(type: widget.type,),));
-                print("Selected Type: $selectedType");
-                if (selectedDuration != null) {
-                  print("Selected Duration: $selectedDuration");
-                }
-              }
-                  : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: primaryColor,
-                minimumSize: const Size(double.infinity, 56),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+            if (selectedDuration == "Custom") ...[
+              const SizedBox(height: 20),
+              Text(
+                "Select Number of Days: ${customDays.toInt()}",
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              Slider(
+                value: customDays,
+                min: 4,
+                max: 31,
+                divisions: 29,
+                label: "${customDays.toInt()} Days",
+                activeColor: primaryColor,
+                inactiveColor: Colors.grey.shade300,
+                onChanged: (value) {
+                  setState(() {
+                    customDays = value;
+                  });
+                },
+              ),
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      selectedDuration = "${customDays.toInt()} Days";
+                    });
+                    navigateToNextPage();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: primaryColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text(
+                    "Confirm Selection",
+                    style: TextStyle(fontSize: 16, color: Colors.white),
+                  ),
                 ),
               ),
-              child: const Text(
-                "Next",
-                style: TextStyle(fontSize: 16,color:Colors.white),
-              ),
-            ),
-            const SizedBox(height: 16),
+            ],
+            const SizedBox(height: 40),
           ],
         ),
       ),

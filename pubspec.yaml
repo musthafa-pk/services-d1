@@ -41,6 +41,11 @@ dependencies:
   path: ^1.8.0
   fluttertoast: ^8.2.10
   shared_preferences: ^2.4.0
+  carousel_slider: ^5.0.0
+  image_picker: ^1.1.2
+  smooth_page_indicator: ^1.2.0+3
+  geolocator: ^13.0.2
+  geocoding: ^3.0.0
 
 
 dev_dependencies:
@@ -75,6 +80,20 @@ flutter:
     - assets/images/successimage.png
     - assets/images/male.png
     - assets/images/female.png
+    - assets/images/d1/flask.png
+    - assets/images/d1/medical-report.png
+    - assets/images/d1/x-ray.png
+    - assets/images/d1/nolog.jpg
+    - assets/icons/account-circle-2-line.png
+    - assets/icons/account-circle-2-fill.png
+    - assets/icons/flask-line.png
+    - assets/icons/flask-fill.png
+    - assets/icons/home-9-line.png
+    - assets/icons/home-9-fill.png
+    - assets/icons/store-2-line.png
+    - assets/icons/store-2-fill.png
+    - assets/images/default_avatar.png
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -91,6 +110,11 @@ flutter:
     - family: AeonikTRIAL
       fonts:
         - asset: assets/fonts/AeonikTRIAL-Bold.otf
+        - asset: assets/fonts/AeonikTRIAL-BoldItalic.otf
+        - asset: assets/fonts/AeonikTRIAL-Light.otf
+        - asset: assets/fonts/AeonikTRIAL-LightItalic.otf
+        - asset: assets/fonts/AeonikTRIAL-Regular.otf
+        - asset: assets/fonts/AeonikTRIAL-RegularItalic.otf
 
   #
   # For details regarding fonts from package dependencies,

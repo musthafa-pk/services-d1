@@ -10,14 +10,15 @@ import '../constants/constants.dart';
 class AgePage extends StatefulWidget {
   String type;
   String gender;
-  AgePage({required this.type,required this.gender,Key? key}) : super(key: key);
+  String? mobility;
+  AgePage({required this.type,required this.gender,this.mobility,Key? key}) : super(key: key);
 
   @override
   State<AgePage> createState() => _AgePageState();
 }
 
 class _AgePageState extends State<AgePage> {
-  int selectedAge = 27;
+  int selectedAge = 25;
   late FixedExtentScrollController _controller;
 
   @override
@@ -80,7 +81,7 @@ class _AgePageState extends State<AgePage> {
                       smoothScrollToItem(selectedAge - 1);
                     }
                   },
-                  icon: const Icon(Icons.arrow_left, color: Colors.pink),
+                  icon: const Icon(Icons.arrow_left, color: primaryColor),
                 ),
                 SizedBox(
                   height: 400,
@@ -123,7 +124,7 @@ class _AgePageState extends State<AgePage> {
                       smoothScrollToItem(selectedAge - 1);
                     }
                   },
-                  icon: const Icon(Icons.arrow_right, color: Colors.pink),
+                  icon: const Icon(Icons.arrow_right, color: primaryColor),
                 ),
               ],
             ),
@@ -137,17 +138,25 @@ class _AgePageState extends State<AgePage> {
                     setState(() {
                       Util.toastMessage('Selected Age is $selectedAge');
                       if(widget.type=='A'){
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => BasicDetailsPage(type: widget.type,),));
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => BasicDetailsPage(
+                          type: widget.type,
+                          age: selectedAge.toString(),
+                          mobility: widget.mobility,
+                        ),));
                       }else if(widget.type=='B'){
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => AssistantTypePage(type: widget.type),));
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => AssistantTypePage(type: widget.type,age: selectedAge.toString(),gender: widget.gender,),));
                       }
                       else if(widget.type=="C"){
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => AddPatientLocationPage(type: widget.type,),));
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => AddPatientLocationPage(
+                          type: widget.type,
+                          gender: widget.gender,
+                          age: selectedAge.toString(),
+                        ),));
                       }else{
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => AssistantTypePage(type: widget.type,),
+                            builder: (context) => AssistantTypePage(type: widget.type,age: selectedAge.toString(),),
                           ),
                         );
                       }

@@ -6,13 +6,31 @@ import 'package:services/views/physiotherapy/basicDetailTherapy.dart';
 class AddPatientLocationPage extends StatefulWidget {
   String? selectedType;
   String type;
-  AddPatientLocationPage({required this.type,this.selectedType,Key? key}) : super(key: key);
+  String? age;
+  String? gender;
+  DateTime? basicDate;
+  String? dayNight;
+  String? gen_speci;
+  String? mobility;
+  AddPatientLocationPage({
+    required this.type,
+    this.selectedType,
+    this.age,
+    this.gender,
+    this.basicDate,
+    this.dayNight,
+    this.gen_speci,
+    this.mobility,
+    Key? key}) : super(key: key);
 
   @override
   State<AddPatientLocationPage> createState() => _AddPatientLocationPageState();
 }
 
 class _AddPatientLocationPageState extends State<AddPatientLocationPage> {
+
+  final TextEditingController locationController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,6 +79,7 @@ class _AddPatientLocationPageState extends State<AddPatientLocationPage> {
                 children: [
                   Expanded(
                     child: TextField(
+                      controller: locationController,
                       decoration: InputDecoration(
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 16,
@@ -89,10 +108,21 @@ class _AddPatientLocationPageState extends State<AddPatientLocationPage> {
               child: ElevatedButton(
                 onPressed: () {
                   if(widget.type=='A'){
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => Additional(selectedType: widget.selectedType,),));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => Additional(
+                      type: widget.type,
+                      selectedType: widget.selectedType,
+                      age: widget.age,
+                      gender: widget.gender,
+                      basicDate: widget.basicDate,
+                      dayNight: widget.dayNight,
+                      gen_speci: widget.gen_speci,
+                      mobility: widget.mobility,
+                      location: locationController.text,
+
+                    ),));
                   }
                   else if(widget.type == 'C'){
-                    Navigator.push(context, MaterialPageRoute(builder: (context) =>BasicDetailTherapy() ,));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) =>BasicDetailTherapy(location: locationController.text,age: widget.age,gender: widget.gender,) ,));
                   }
                   // Navigate to the next page
 

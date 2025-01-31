@@ -4,6 +4,10 @@ import 'package:services/views/locationTimingPage.dart';
 import '../constants/constants.dart';
 
 class PickupAssistancePage extends StatefulWidget {
+  String type;
+  String? age;
+  String? gender;
+  PickupAssistancePage({required this.type,required this.age,this.gender,super.key});
   @override
   _PickupAssistancePageState createState() => _PickupAssistancePageState();
 }
@@ -74,7 +78,9 @@ class _PickupAssistancePageState extends State<PickupAssistancePage> {
               ElevatedButton(
                 onPressed: () {
                   // Handle "Next" button action
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => LocationTimingPage(delivryType: selectedOption,),));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => LocationTimingPage(
+                    type: widget.type,
+                    delivryType: selectedOption,age: widget.age,gender: widget.gender,),));
                   print("Selected Option: $selectedOption");
                 },
                 style: ElevatedButton.styleFrom(

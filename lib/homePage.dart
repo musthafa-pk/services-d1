@@ -50,7 +50,11 @@ class _HomepageState extends State<Homepage> {
         // Store user_id in SharedPreferences
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setInt('user_id', userId);
+        await prefs.setString('userName', name);
+        await prefs.setString('userPhone', contactNo);
         print('stored data is :${prefs.getInt('user_id')}');
+        print('stored data is :${prefs.getString('userName')}');
+        print('stored data is :${prefs.getString('userPhone')}');
 
         Util.toastMessage('${responseData['message']}');
         if(widget.type == "A"){

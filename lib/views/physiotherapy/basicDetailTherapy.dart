@@ -1,18 +1,25 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:services/constants/constants.dart';
-import 'package:services/res/appUrl.dart';
-import 'package:services/utils/utils.dart';
-import 'package:services/views/splash/submit_success.dart';
+import 'package:intl/intl.dart';
+import 'package:doctor_one/constants/constants.dart';
+import 'package:doctor_one/res/appUrl.dart';
+import 'package:doctor_one/utils/utils.dart';
+import 'package:doctor_one/views/splash/submit_success.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class BasicDetailTherapy extends StatefulWidget {
-  String? location;
+  List<Map<String, dynamic>>? location;
   String? age;
   String? gender;
-  BasicDetailTherapy({this.location,this.age,this.gender,Key? key}) : super(key: key);
+  String? pincode;
+  BasicDetailTherapy({
+    this.location,
+    this.age,
+    this.gender,
+    this.pincode,
+    Key? key}) : super(key: key);
   @override
   _BasicDetailTherapyState createState() => _BasicDetailTherapyState();
 }
@@ -25,21 +32,33 @@ class _BasicDetailTherapyState extends State<BasicDetailTherapy> {
     // API endpoint
     final String url = AppUrl.addphysiotherapy;
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    int? userID = preferences.getInt('user_id');
+    int? serviceID = preferences.getInt('service_id');
     String? userName = preferences.getString('userName');
     String? userPhone = preferences.getString('userPhone');
 
+    String formattedDate = DateFormat('dd-MM-yyyy').format(selectedDate);
+
+    // Address in the required format
+    // List<Map<String, dynamic>> addressList = [
+    //   {
+    //     "address": "${widget.location}",
+    //     "latitude": "11.6006613",
+    //     "longitude": "75.583897"
+    //   }
+    // ];
+
     // Request payload
     final Map<String, dynamic> payload = {
-      "id":userID,
+      "id":serviceID,
       "patient_name": "${userName}",
       "patient_contact_no": "${userPhone}",
       "patient_gender": "${widget.gender}",
       "patient_age": "${widget.age}",
-      "start_date": "${selectedDate}",
-      "patient_location": "${widget.location}",
+      "start_date": "${formattedDate}",
+      "patient_location": widget.location,
+      "pincode":int.parse(widget.pincode.toString()),
       "prefered_time": "${Util.formatTimeOfDay(selectedTime)}",
-      "therapy_type":"${selectedTherapy}"
+      "therapy_type":"${selectedTherapy.toString().toLowerCase()}"
     };
 
     try {
@@ -80,54 +99,35 @@ class _BasicDetailTherapyState extends State<BasicDetailTherapy> {
 
 
   final List<Map<String, String>> listOfTherapy = [
-    {
-      "name": "Stretching",
-      "description": "Helps to improve flexibility",
-    },
-    {
-      "name": "Strength training",
-      "description": "Can be done with weights or exercise equipment",
-    },
-    {
-      "name": "Massage",
-      "description": "Helps to reduce pain",
-    },
-    {
-      "name": "Heat or cold therapy",
-      "description": "Can help to reduce pain and improve flexibility",
-    },
-    {
-      "name": "Hydrotherapy",
-      "description": "Can help to improve joint movement",
-    },
-    {
-      "name": "Transcutaneous electrical nerve stimulation (TENS)",
-      "description": "Can help to reduce pain",
-    },
-    {
-      "name": "Manual therapy",
-      "description": "Can help to restore function",
-    },
-    {
-      "name": "Joint mobilization",
-      "description": "Can help to restore joint movement",
-    },
-    {
-      "name": "Taping",
-      "description": "Can help to reduce pain",
-    },
-    {
-      "name": "Ultrasound",
-      "description": "Can help to reduce pain and restore function",
-    },
-    {
-      "name": "Electromagnets",
-      "description": "Can help to reduce pain",
-    },
-    {
-      "name": "Cryotherapy",
-      "description": "Can help to reduce pain and muscle spasms",
-    },
+      {
+        "name": "Orthopedic",
+        "description": "Focuses on treating musculoskeletal injuries and conditions."
+      },
+      {
+        "name": "Neurological",
+        "description": "Designed for patients with nervous system disorders like stroke or Parkinson’s."
+      },
+      {
+        "name": "Pediatric",
+        "description": "Helps children improve mobility, strength, and coordination."
+      },
+      {
+        "name": "Geriatric",
+        "description": "Aimed at older adults to maintain mobility and reduce pain."
+      },
+      {
+        "name": "Sports",
+        "description": "Focuses on injury prevention and rehabilitation for athletes."
+      },
+      {
+        "name": "Women’s Health",
+        "description": "Addresses issues like prenatal/postnatal care and pelvic health."
+      },
+      {
+        "name": "Other",
+        "description": "Covers specialized therapies outside standard categories."
+      }
+
   ];
 
   DateTime selectedDate = DateTime.now();
@@ -138,7 +138,7 @@ class _BasicDetailTherapyState extends State<BasicDetailTherapy> {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: selectedDate,
-      firstDate: DateTime(2020),
+      firstDate: DateTime.now(),
       lastDate: DateTime(2101),
     );
     if (picked != null && picked != selectedDate)

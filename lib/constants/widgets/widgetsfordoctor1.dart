@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:services/constants/constants.dart';
+import 'package:google_places_flutter/google_places_flutter.dart';
+
+import '../../res/appUrl.dart';
+import '../../utils/utils.dart';
+import '../constants.dart';
 
 
 class DroneAppWidgets {
@@ -30,7 +34,7 @@ class DroneAppWidgets {
             : null, // Icon on the right with tap handler
         hintText: hintText,hintStyle: TextStyle(fontSize: 12),
         filled: true,
-        fillColor: color1,
+        fillColor: pharmacyBlueLight,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide.none,
@@ -122,5 +126,92 @@ class DroneAppWidgets {
       ),
     );
   }
+
+  static Widget buildGooglePlacesTextField({
+    required String label,
+    required TextEditingController addressController,
+    required TextEditingController pincodeController,
+    required Function(Map<String, dynamic>) onAddressSelected,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+        const SizedBox(height: 8),
+        GooglePlaceAutoCompleteTextField(
+          textEditingController: addressController,
+          googleAPIKey: AppUrl.G_MAP_KEY,
+          inputDecoration: InputDecoration(
+            filled: true,
+            fillColor: primaryColor2,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: primaryColor),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: primaryColor),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: primaryColor, width: 2),
+            ),
+          ),
+          debounceTime: 800,
+          countries: ["IN"], // Restrict to India (change as needed)
+          isLatLngRequired: true,
+          getPlaceDetailWithLatLng: (prediction) async {
+            print("Place details: ${prediction.lng} , ${prediction.lat}");
+
+            // Fetch pincode
+            String? pincode = await Util.getPincodeFromLatLng(prediction.lat!, prediction.lng!);
+
+            // Preserve cursor position
+            String newText = prediction.description!;
+            int cursorPosition = addressController.selection.baseOffset;
+
+            // Update controllers safely
+            addressController.value = TextEditingValue(
+              text: newText,
+              selection: TextSelection.collapsed(offset: cursorPosition),
+            );
+
+            pincodeController.text = pincode ?? "N/A";
+
+            // Add address data
+            Map<String, dynamic> selectedAddress = {
+              "address": newText,
+              "latitude": prediction.lat.toString(),
+              "longitude": prediction.lng.toString(),
+              "pincode": pincode ?? "N/A"
+            };
+
+            // Callback update
+            onAddressSelected(selectedAddress);
+          },
+          itemClick: (prediction) {
+            // Preserve cursor position
+            String newText = prediction.description!;
+            int cursorPosition = addressController.selection.baseOffset;
+
+            addressController.value = TextEditingValue(
+              text: newText,
+              selection: TextSelection.collapsed(offset: cursorPosition),
+            );
+          },
+          seperatedBuilder: const Divider(),
+        ),
+      ],
+    );
+  }
+
+
 
 }

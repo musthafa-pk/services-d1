@@ -1,11 +1,11 @@
+import 'package:doctor_one/Dr1/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:services/Dr1/profile.dart';
-import 'package:services/constants/constants.dart';
-import 'package:services/res/appUrl.dart';
 
-import '../constants/widgets/widgetsByGIkhin.dart';
+import '../constants/constants.dart';
+import '../constants/widgets/widgetsfordoctor1.dart';
+import '../res/appUrl.dart';
 import 'LoginPage.dart';
 
 class Signupdrone extends StatefulWidget {
@@ -52,7 +52,7 @@ class _SignupdroneState extends State<Signupdrone> {
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text("Signup Successful!"))
         );
-        Navigator.push(context, MaterialPageRoute(builder: (context) => DrOneProfile()));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => DroneLoginpage()));
       } else {
         // Signup failed
         ScaffoldMessenger.of(context).showSnackBar(
@@ -71,7 +71,9 @@ class _SignupdroneState extends State<Signupdrone> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(backgroundColor: Colors.white),
+      appBar: AppBar(
+        elevation: 0,
+          backgroundColor: Colors.white),
       body: SingleChildScrollView(
         child: Form(
           key: _formKey,
@@ -79,7 +81,7 @@ class _SignupdroneState extends State<Signupdrone> {
             padding: const EdgeInsets.all(10.0),
             child: Column(
               children: [
-                const CircleAvatar(radius: 30, child: Text('Dr1')),
+                CircleAvatar(radius: 30,backgroundColor: Colors.white, child: Image.asset('assets/images/logo.png',fit: BoxFit.fill,)),
                 const SizedBox(height: 10),
                 const Text('Create Account', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 10),
@@ -133,15 +135,16 @@ class _SignupdroneState extends State<Signupdrone> {
                 ),
                 const SizedBox(height: 10),
                 DroneAppWidgets.mainButton(
-                  backgroundColor: d1blue,
+                  backgroundColor: pharmacyBlue,
                   title: 'Create Account',
+                  textColor: Colors.black,
                   onPressed: registerUser, // Call API function
                 ),
                 TextButton(
                   onPressed: () {
                     Navigator.push(context, MaterialPageRoute(builder: (context) => DroneLoginpage()));
                   },
-                  child: const Text('Already have an account? Login', style: TextStyle(color: d1blue)),
+                  child: const Text('Already have an account? Login', style: TextStyle(color: Colors.black)),
                 ),
                 const Text('OR', style: TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 10),

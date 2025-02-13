@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:services/views/locationTimingPage.dart';
+import 'package:doctor_one/views/locationTimingPage.dart';
 
 import '../constants/constants.dart';
 
@@ -7,7 +7,16 @@ class PickupAssistancePage extends StatefulWidget {
   String type;
   String? age;
   String? gender;
-  PickupAssistancePage({required this.type,required this.age,this.gender,super.key});
+  String? inoutpatient;
+  String? mobility;
+  int? customeDays;
+  PickupAssistancePage({required this.type,
+    required this.age,
+    this.gender,
+    this.inoutpatient,
+    this.mobility,
+    this.customeDays,
+    super.key});
   @override
   _PickupAssistancePageState createState() => _PickupAssistancePageState();
 }
@@ -80,7 +89,14 @@ class _PickupAssistancePageState extends State<PickupAssistancePage> {
                   // Handle "Next" button action
                   Navigator.push(context, MaterialPageRoute(builder: (context) => LocationTimingPage(
                     type: widget.type,
-                    delivryType: selectedOption,age: widget.age,gender: widget.gender,),));
+                    delivryType: selectedOption,
+                    age: widget.age,
+                    gender: widget.gender,
+                    inoutpatient: widget.inoutpatient,
+                    pickup: selectedOption,
+                    mobility: widget.mobility,
+                    customeDays: widget.customeDays,
+                  ),));
                   print("Selected Option: $selectedOption");
                 },
                 style: ElevatedButton.styleFrom(

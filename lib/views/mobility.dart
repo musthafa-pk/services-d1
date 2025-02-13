@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:services/constants/constants.dart';
-import 'package:services/views/gender.dart';
-import 'package:services/views/pickupAssitance.dart';
+import 'package:doctor_one/constants/constants.dart';
+import 'package:doctor_one/views/gender.dart';
+import 'package:doctor_one/views/pickupAssitance.dart';
 
 class PatientMobilityPage extends StatefulWidget {
   String type;
   String? age;
   String? gender;
   String? inoutpatient;
-  PatientMobilityPage({required this.type, this.age, this.gender, this.inoutpatient, super.key});
+  int? customeDays;
+  PatientMobilityPage({required this.type, this.age, this.gender, this.inoutpatient,this.customeDays, super.key});
 
   @override
   _PatientMobilityPageState createState() => _PatientMobilityPageState();
@@ -21,23 +22,45 @@ class _PatientMobilityPageState extends State<PatientMobilityPage> {
     setState(() {
       selectedMobility = mobility;
     });
+
+    // Mapping display text to required values
+    String mobilityValue;
+    if (mobility == "Patient Can \nWalk") {
+      mobilityValue = "walk";
+    } else if (mobility == "Patient Needs a \nWheelchair") {
+      mobilityValue = "chair";
+    } else {
+      mobilityValue = "stretcher";
+    }
+
     if (widget.type == 'A') {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => Gender(type: widget.type),
+          builder: (context) => Gender(
+            type: widget.type,
+            mobility: mobilityValue, // Pass mapped value
+          ),
         ),
       );
     } else {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => PickupAssistancePage(type: widget.type,age: widget.age,gender: widget.gender,),
+          builder: (context) => PickupAssistancePage(
+            type: widget.type,
+            age: widget.age,
+            gender: widget.gender,
+            inoutpatient: widget.inoutpatient,
+            mobility: mobilityValue,
+            customeDays: widget.customeDays,
+          ),
         ),
       );
     }
-    print("Selected Mobility: $mobility");
+    print("Selected Mobility: $mobilityValue");
   }
+
 
   @override
   Widget build(BuildContext context) {

@@ -1,14 +1,14 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:services/Dr1/ProductDetailsPage.dart';
 import 'package:http/http.dart' as http;
-import 'package:services/constants/constants.dart';
-import 'package:services/res/appUrl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../constants/constants.dart';
+import '../res/appUrl.dart';
 import 'Medicine.dart';
 import 'MedicineCart.dart';
+import 'ProductDetailsPage.dart';
 
 class ProductListPage extends StatefulWidget {
   final String category;  // Category passed from the previous page
@@ -83,15 +83,15 @@ class _ProductListPageState extends State<ProductListPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        elevation: 0,
         automaticallyImplyLeading: true,
         backgroundColor: Colors.white,
+        elevation: 0,
         actions: [
           Stack(
             children: [
               CircleAvatar(
                 radius: 35,
-                backgroundColor: color1,
+                backgroundColor: pharmacyBlueLight,
                 child: IconButton(
                   icon: Icon(Icons.shopping_cart, color: Colors.black),
                   onPressed: () {
@@ -139,7 +139,7 @@ class _ProductListPageState extends State<ProductListPage> {
                   hintText: 'Search...',
                   prefixIcon: Icon(Icons.search, color: Colors.grey),
                   filled: true,
-                  fillColor: color1,
+                  fillColor: pharmacyBlueLight,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(30),
                     borderSide: BorderSide.none,
@@ -167,7 +167,7 @@ class _ProductListPageState extends State<ProductListPage> {
                                   width:80,
                                   padding: EdgeInsets.all(5),
                                   decoration: BoxDecoration(
-                                    color: isSelected ? color1 : Colors.transparent,
+                                    color: isSelected ? pharmacyBlueLight : Colors.transparent,
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: Image.network(categories[index].categoryImage, width: 40, height: 40),
@@ -205,13 +205,13 @@ class _ProductListPageState extends State<ProductListPage> {
                               onTap: () {
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(builder: (context) => ProductDetailPage()),
+                                  MaterialPageRoute(builder: (context) => ProductDetailPage(productID: product.id,)),
                                 );
                               },
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(9),
-                                  border: Border.all(width: 1, color: color1),
+                                  border: Border.all(width: 1, color: pharmacyBlueLight),
                                 ),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,

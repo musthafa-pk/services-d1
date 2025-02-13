@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:services/utils/utils.dart';
-import 'package:services/views/AssistantTypePage.dart';
-import 'package:services/views/addLocation.dart';
-import 'package:services/views/basicDetails.dart';
-import 'package:services/views/physiotherapy/addPatientLocation.dart';
+import 'package:doctor_one/utils/utils.dart';
+import 'package:doctor_one/views/AssistantTypePage.dart';
+import 'package:doctor_one/views/basicDetails.dart';
+import 'package:doctor_one/views/physiotherapy/addPatientLocation.dart';
 
 import '../constants/constants.dart';
 
@@ -142,9 +141,14 @@ class _AgePageState extends State<AgePage> {
                           type: widget.type,
                           age: selectedAge.toString(),
                           mobility: widget.mobility,
+                          gender: widget.gender,
                         ),));
                       }else if(widget.type=='B'){
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => AssistantTypePage(type: widget.type,age: selectedAge.toString(),gender: widget.gender,),));
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => AssistantTypePage(
+                          type: widget.type,
+                          age: selectedAge.toString(),
+                          gender: widget.gender,
+                        ),));
                       }
                       else if(widget.type=="C"){
                         Navigator.push(context, MaterialPageRoute(builder: (context) => AddPatientLocationPage(

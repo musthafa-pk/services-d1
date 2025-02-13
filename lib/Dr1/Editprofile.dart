@@ -1,11 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:doctor_one/Dr1/profile.dart';
+import 'package:doctor_one/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 import 'package:http/http.dart' as http;
-import 'package:services/Dr1/profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../res/appUrl.dart';
 
@@ -153,12 +154,12 @@ class _DrOneEditProfileState extends State<DrOneEditProfile> {
                 child: ElevatedButton(
                   onPressed: editUser,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryColor,
+                    backgroundColor: pharmacyBlue,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
                   ),
-                  child: Text("Save", style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+                  child: Text("Save", style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold)),
                 ),
               ),
               SizedBox(height: 20),
@@ -183,7 +184,7 @@ class _DrOneEditProfileState extends State<DrOneEditProfile> {
             decoration: InputDecoration(
               contentPadding: EdgeInsets.symmetric(horizontal: 15),
               filled: true,
-              fillColor: Colors.grey[200],
+              fillColor: pharmacyBlueLight,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(100),
                 borderSide: BorderSide.none,
@@ -208,7 +209,7 @@ class _DrOneEditProfileState extends State<DrOneEditProfile> {
             decoration: InputDecoration(
               contentPadding: EdgeInsets.symmetric(horizontal: 15),
               filled: true,
-              fillColor: Colors.grey[200],
+              fillColor: pharmacyBlueLight,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(100),
                 borderSide: BorderSide.none,

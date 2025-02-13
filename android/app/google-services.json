@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "1028746978784",
+    "project_id": "medone-d8cbc",
+    "storage_bucket": "medone-d8cbc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1028746978784:android:cd709ea4b6a9cf9d7f7785",
+        "android_client_info": {
+          "package_name": "com.example.dr1timekeeping_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKTNc3phv46nNYgjYdpdEu1l6Z8vSAgsI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1028746978784:android:cd46787c1f9753697f7785",
+        "android_client_info": {
+          "package_name": "com.example.med_one"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKTNc3phv46nNYgjYdpdEu1l6Z8vSAgsI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1028746978784:android:d0c49ad4a244f7a17f7785",
+        "android_client_info": {
+          "package_name": "com.example.services"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKTNc3phv46nNYgjYdpdEu1l6Z8vSAgsI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

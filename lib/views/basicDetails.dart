@@ -1,13 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:services/constants/constants.dart';
-import 'package:services/views/physiotherapy/addPatientLocation.dart';
+import 'package:intl/intl.dart'; // For formatting the date
+import 'package:doctor_one/constants/constants.dart';
+import 'package:doctor_one/views/physiotherapy/addPatientLocation.dart';
 
 class BasicDetailsPage extends StatefulWidget {
   String type;
   String? age;
   String? mobility;
   String? gender;
-   BasicDetailsPage({required this.type,this.age,this.gender,this.mobility,Key? key}) : super(key: key);
+
+  BasicDetailsPage({
+    required this.type,
+    this.age,
+    this.gender,
+    this.mobility,
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<BasicDetailsPage> createState() => _BasicDetailsPageState();
@@ -17,6 +25,29 @@ class _BasicDetailsPageState extends State<BasicDetailsPage> {
   String? selectedAvailability;
   String? selectedType;
   DateTime? date;
+  final TextEditingController _dateController = TextEditingController();
+
+  @override
+  void dispose() {
+    _dateController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickDate() async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: date ?? DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2100),
+    );
+
+    if (pickedDate != null) {
+      setState(() {
+        date = pickedDate;
+        _dateController.text = DateFormat('dd/MM/yyyy').format(pickedDate); // Display formatted date
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +59,7 @@ class _BasicDetailsPageState extends State<BasicDetailsPage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            Navigator.pop(context); // Go back to the previous page
+            Navigator.pop(context);
           },
         ),
       ),
@@ -50,58 +81,33 @@ class _BasicDetailsPageState extends State<BasicDetailsPage> {
               const SizedBox(height: 40),
               const Text(
                 'Date',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.black,
-                ),
+                style: TextStyle(fontSize: 16, color: Colors.black),
               ),
               const SizedBox(height: 8),
-              TextField(
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: primaryColor2,
-                  hintText: 'Select a date',
-                  suffixIcon: Icon(
-                    Icons.calendar_today,
-                    color: Colors.grey.shade700,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(
-                      color: primaryColor,
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(
-                      color: primaryColor,
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(
-                      color: primaryColor,
-                      width: 2,
-                    ),
-                  ),
+            TextField(
+              controller: _dateController, // Use the controller
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: date != null ? primaryColor2 : Colors.white, // Change color if a date is selected
+                hintText: 'Select a date',
+                suffixIcon: Icon(Icons.calendar_today, color: Colors.grey.shade700),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: primaryColor), // Border color
                 ),
-                readOnly: true,
-                onTap: () {
-                  // Handle date picker here
-                  showDatePicker(
-                    context: context,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime(2000),
-                    lastDate: DateTime(2100),
-                  ).then((selectedDate) {
-                    if (selectedDate != null) {
-                      setState(() {
-                        date = selectedDate;
-                      });
-                    }
-                  });
-                },
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: primaryColor), // Border color when enabled
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: primaryColor, width: 1), // Border color when focused
+                ),
               ),
+              readOnly: true,
+              onTap: _pickDate, // Call the date picker
+            ),
+
               const SizedBox(height: 24),
               Row(
                 children: [
@@ -109,25 +115,20 @@ class _BasicDetailsPageState extends State<BasicDetailsPage> {
                     child: GestureDetector(
                       onTap: () {
                         setState(() {
-                          selectedAvailability = 'Day';
+                          selectedAvailability = 'days';
                         });
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         decoration: BoxDecoration(
-                          color: selectedAvailability == 'Day'
-                              ? primaryColor2
-                              : Colors.white,
+                          color: selectedAvailability == 'days' ? primaryColor2 : Colors.white,
                           border: Border.all(color: primaryColor),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Center(
                           child: Text(
                             'Day/Night',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                            ),
+                            style: TextStyle(color: Colors.black, fontSize: 16),
                           ),
                         ),
                       ),
@@ -144,19 +145,14 @@ class _BasicDetailsPageState extends State<BasicDetailsPage> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         decoration: BoxDecoration(
-                          color: selectedAvailability == '24*7'
-                              ? primaryColor2
-                              : Colors.white,
+                          color: selectedAvailability == '24*7' ? primaryColor2 : Colors.white,
                           border: Border.all(color: primaryColor),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Center(
                           child: Text(
                             '24*7',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                            ),
+                            style: TextStyle(color: Colors.black, fontSize: 16),
                           ),
                         ),
                       ),
@@ -177,19 +173,14 @@ class _BasicDetailsPageState extends State<BasicDetailsPage> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         decoration: BoxDecoration(
-                          color: selectedType == 'General'
-                              ? primaryColor2
-                              : Colors.white,
-                          border: Border.all(color:primaryColor),
+                          color: selectedType == 'General' ? primaryColor2 : Colors.white,
+                          border: Border.all(color: primaryColor),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Center(
                           child: Text(
                             'General',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                            ),
+                            style: TextStyle(color: Colors.black, fontSize: 16),
                           ),
                         ),
                       ),
@@ -206,19 +197,14 @@ class _BasicDetailsPageState extends State<BasicDetailsPage> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         decoration: BoxDecoration(
-                          color: selectedType == 'Specialized'
-                              ? primaryColor2
-                              : Colors.white,
+                          color: selectedType == 'Specialized' ? primaryColor2 : Colors.white,
                           border: Border.all(color: primaryColor),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Center(
                           child: Text(
                             'Specialized',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                            ),
+                            style: TextStyle(color: Colors.black, fontSize: 16),
                           ),
                         ),
                       ),
@@ -231,32 +217,32 @@ class _BasicDetailsPageState extends State<BasicDetailsPage> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    // Handle Next button click
-                    if(widget.type == 'A'){
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => AddPatientLocationPage(
-                        type: widget.type,
-                        selectedType: selectedType,
-                        age: widget.age,
-                        basicDate: date,
-                        gender: widget.gender,
-                        dayNight: selectedAvailability,
-                        gen_speci: selectedType,
-                      ),));
+                    if (widget.type == 'A') {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AddPatientLocationPage(
+                            type: widget.type,
+                            selectedType: selectedType,
+                            age: widget.age,
+                            basicDate: date, // Send selected DateTime
+                            gender: widget.gender,
+                            dayNight: selectedAvailability,
+                            gen_speci: selectedType,
+                            mobility: widget.mobility,
+                          ),
+                        ),
+                      );
                     }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: primaryColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
                   child: const Text(
                     'Next',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white,
-                    ),
+                    style: TextStyle(fontSize: 16, color: Colors.white),
                   ),
                 ),
               ),

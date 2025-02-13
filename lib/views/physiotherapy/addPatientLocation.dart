@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:services/constants/constants.dart';
-import 'package:services/views/additional.dart';
-import 'package:services/views/physiotherapy/basicDetailTherapy.dart';
+import 'package:doctor_one/constants/constants.dart';
+import 'package:doctor_one/views/additional.dart';
+import 'package:doctor_one/views/physiotherapy/basicDetailTherapy.dart';
+
+import '../../constants/widgets/widgetsfordoctor1.dart';
 
 class AddPatientLocationPage extends StatefulWidget {
   String? selectedType;
@@ -30,6 +32,8 @@ class AddPatientLocationPage extends StatefulWidget {
 class _AddPatientLocationPageState extends State<AddPatientLocationPage> {
 
   final TextEditingController locationController = TextEditingController();
+  TextEditingController pincodeController = TextEditingController();
+  List<Map<String, dynamic>> locationAddress = [];
 
   @override
   Widget build(BuildContext context) {
@@ -60,48 +64,57 @@ class _AddPatientLocationPageState extends State<AddPatientLocationPage> {
               ),
             ),
             const SizedBox(height: 48),
-            const Text(
-              'Location',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.normal,
-                color: Colors.black,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFFFFF3F8),
-                border: Border.all(color: primaryColor),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: locationController,
-                      decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 16,
-                        ),
-                        hintText: "Enter location",
-                        border: InputBorder.none,
-                        hintStyle: TextStyle(
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.location_on, color: Colors.grey),
-                    onPressed: () {
-                      // Add location logic here
-                    },
-                  ),
-                ],
-              ),
-            ),
+            DroneAppWidgets.buildGooglePlacesTextField(
+                label: 'Location',
+                addressController: locationController,
+                pincodeController: pincodeController,
+                onAddressSelected: (selectedAddress){
+                  setState(() {
+                    locationAddress.add(selectedAddress);
+                  });
+                }),
+            // const Text(
+            //   'Location',
+            //   style: TextStyle(
+            //     fontSize: 16,
+            //     fontWeight: FontWeight.normal,
+            //     color: Colors.black,
+            //   ),
+            // ),
+            // const SizedBox(height: 8),
+            // Container(
+            //   decoration: BoxDecoration(
+            //     color: const Color(0xFFFFF3F8),
+            //     border: Border.all(color: primaryColor),
+            //     borderRadius: BorderRadius.circular(8),
+            //   ),
+            //   child: Row(
+            //     children: [
+            //       Expanded(
+            //         child: TextField(
+            //           controller: locationController,
+            //           decoration: InputDecoration(
+            //             contentPadding: const EdgeInsets.symmetric(
+            //               horizontal: 16,
+            //               vertical: 16,
+            //             ),
+            //             hintText: "Enter location",
+            //             border: InputBorder.none,
+            //             hintStyle: TextStyle(
+            //               color: Colors.grey[600],
+            //             ),
+            //           ),
+            //         ),
+            //       ),
+            //       IconButton(
+            //         icon: const Icon(Icons.location_on, color: Colors.grey),
+            //         onPressed: () {
+            //           // Add location logic here
+            //         },
+            //       ),
+            //     ],
+            //   ),
+            // ),
             const Spacer(),
             SizedBox(
               width: double.infinity,
@@ -117,12 +130,17 @@ class _AddPatientLocationPageState extends State<AddPatientLocationPage> {
                       dayNight: widget.dayNight,
                       gen_speci: widget.gen_speci,
                       mobility: widget.mobility,
-                      location: locationController.text,
-
+                      location: locationAddress,
+                      pincode: pincodeController.text,
                     ),));
                   }
                   else if(widget.type == 'C'){
-                    Navigator.push(context, MaterialPageRoute(builder: (context) =>BasicDetailTherapy(location: locationController.text,age: widget.age,gender: widget.gender,) ,));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) =>BasicDetailTherapy(
+                      location: locationAddress,
+                      age: widget.age,
+                      gender: widget.gender,
+                      pincode: pincodeController.text,
+                    ) ,));
                   }
                   // Navigate to the next page
 

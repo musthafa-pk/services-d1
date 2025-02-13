@@ -13,7 +13,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>services</string>
+	<string>doctor_one</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -50,5 +50,6 @@
 
     <key>NSLocationAlwaysUsageDescription</key>
     <string>We need your location to autofill the address</string>
+
 </dict>
 </plist>

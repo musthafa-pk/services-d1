@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:services/constants/constants.dart';
-import 'package:services/utils/utils.dart';
-import 'package:services/views/age.dart';
+import 'package:doctor_one/constants/constants.dart';
+import 'package:doctor_one/utils/utils.dart';
+import 'package:doctor_one/views/age.dart';
 
 class Gender extends StatefulWidget {
   String type;
@@ -50,6 +50,7 @@ class _GenderState extends State<Gender> {
                       builder: (context) => AgePage(
                         type: widget.type,
                         gender: 'Male',
+                        mobility: widget.mobility,
                       ),
                     ),
                   );
@@ -94,6 +95,7 @@ class _GenderState extends State<Gender> {
                       builder: (context) => AgePage(
                         type: widget.type,
                         gender: 'Female',
+                        mobility: widget.mobility,
                       ),
                     ),
                   );

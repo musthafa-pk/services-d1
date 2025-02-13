@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:services/constants/constants.dart';
-import 'package:services/views/mobility.dart';
+import 'package:doctor_one/constants/constants.dart';
+import 'package:doctor_one/views/mobility.dart';
 
 class AssistantTypePage extends StatefulWidget {
   String type;
@@ -25,7 +25,7 @@ class AssistantTypePage extends StatefulWidget {
 class _AssistantTypePageState extends State<AssistantTypePage> {
   String? selectedType;
   String? selectedDuration;
-  double customDays = 1; // Default value for the slider
+  double customDays = 4; // Default value for the slider
 
   @override
   void initState() {
@@ -41,6 +41,9 @@ class _AssistantTypePageState extends State<AssistantTypePage> {
         builder: (context) => PatientMobilityPage(
           type: widget.type,
           age: widget.age,
+            inoutpatient:selectedType,
+          gender: widget.gender,
+          customeDays: customDays.toInt(),
         ),
       ),
     );

@@ -1,12 +1,15 @@
+import 'package:doctor_one/Dr1/ServiceEnquiryPage1.dart';
+import 'package:doctor_one/Labs/My%20bookings.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import 'package:services/Dr1/myOrders.dart';
-import 'package:services/constants/constants.dart';
-import 'package:services/res/appUrl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../constants/constants.dart';
+import '../res/appUrl.dart';
+import '../utils/utils.dart';
 import 'Editprofile.dart';
+import 'myOrders.dart';
 
 class DrOneProfile extends StatefulWidget {
   @override
@@ -104,24 +107,26 @@ class _DrOneProfileState extends State<DrOneProfile> {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 10),
                             Row(
                               children: [
-                                const Icon(Icons.phone, color: d1blue, size: 18),
+                                const Icon(Icons.phone, color: pharmacyBlue, size: 18),
                                 const SizedBox(width: 5),
                                 Text(user.phoneNo?.isNotEmpty == true ? user.phoneNo : " "),
                               ],
                             ),
+                            const SizedBox(height: 10),
                             Row(
                               children: [
-                                const Icon(Icons.email, color: d1blue, size: 18),
+                                const Icon(Icons.email, color: pharmacyBlue, size: 18),
                                 const SizedBox(width: 5),
                                 Text(user.email?.isNotEmpty == true ? user.email : " "),
                               ],
                             ),
+                            const SizedBox(height: 10),
                             Row(
                               children: [
-                                const Icon(Icons.location_on, color: d1blue, size: 18),
+                                const Icon(Icons.location_on, color: pharmacyBlue, size: 18),
                                 const SizedBox(width: 5),
                                 Text(user.pincode?.isNotEmpty == true ? user.pincode! : " "),
                               ],
@@ -150,13 +155,13 @@ class _DrOneProfileState extends State<DrOneProfile> {
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: d1blue,
+                          backgroundColor: pharmacyBlue,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(25),
                           ),
                         ),
                         child: const Text("Edit profile",
-                            style: TextStyle(color: Colors.white)),
+                            style: TextStyle(color: Colors.black)),
                       ),
                     ),
                   ),
@@ -188,10 +193,18 @@ class _DrOneProfileState extends State<DrOneProfile> {
                   const SizedBox(height: 15),
 
                   // Menu List
-                  _menuItem(Icons.phone, "My queries"),
-                  _menuItem(Icons.lock, "Change password",
-                      subtitle: "Reset your password"),
-                  _menuItem(Icons.help, "Help", subtitle: "Dr1 helpline"),
+                  _menuItem(Icons.hourglass_bottom, "Lab Orders",onTap: (){
+                    setState(() {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => MyBookingsScreen(),));
+                    });
+                  }),
+                  _menuItem(Icons.phone, "My queries",onTap: (){
+                    setState(() {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => ServiceEnqPage1(),));
+                    });
+                  }),
+                  _menuItem(Icons.lock, "Change password",onTap: (){},subtitle: "Reset your password"),
+                  _menuItem(Icons.help, "Help", subtitle: "Dr1 helpline",onTap: (){}),
 
                   const Spacer(),
 
@@ -201,10 +214,12 @@ class _DrOneProfileState extends State<DrOneProfile> {
                     child: SizedBox(
                       width: double.infinity,
                       child: OutlinedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Util.logout(context);
+                        },
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.red,
-                          side: const BorderSide(color: Colors.red),
+                          foregroundColor:pharmacyBlue,
+                          side: const BorderSide(color: pharmacyBlue),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(25),
                           ),
@@ -232,28 +247,28 @@ class _DrOneProfileState extends State<DrOneProfile> {
   Widget _customTabButton(String text) {
     return Container(
       decoration: BoxDecoration(
-        color: color1,
+        color: pharmacyBlueLight,
         borderRadius: BorderRadius.circular(25),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 8),
       child: Text(text,
           style: const TextStyle(
-              color:d1blue, fontWeight: FontWeight.bold)),
+              color:Colors.black, fontWeight: FontWeight.bold)),
     );
   }
 
   // Menu Item
-  Widget _menuItem(IconData icon, String title, {String? subtitle}) {
+  Widget _menuItem(IconData icon, String title, {String? subtitle, required VoidCallback onTap}) {
     return ListTile(
       leading: CircleAvatar(
-          backgroundColor:color1,
-          child: Icon(icon, color:d1blue)),
+          backgroundColor:pharmacyBlueLight,
+          child: Icon(icon, color:Colors.black)),
       title: Text(title),
       subtitle: subtitle != null
           ? Text(subtitle, style: const TextStyle(color: Colors.grey))
           : null,
       trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
-      onTap: () {},
+      onTap: onTap
     );
   }
 }

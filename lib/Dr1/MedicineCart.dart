@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'package:doctor_one/Dr1/salesOrder.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:services/constants/constants.dart';
-import 'package:services/res/appUrl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../constants/constants.dart';
+import '../res/appUrl.dart';
 
 class CartScreen extends StatefulWidget {
   @override
@@ -55,7 +57,7 @@ class _CartScreenState extends State<CartScreen> {
     setState(() {
       if (increase) {
         cartItems[index]['quantity']++;
-      } else if (cartItems[index]['quantity'] > 1) {
+      } else if (cartItems[index]['quantity'] > 0) {
         cartItems[index]['quantity']--;
       }
     });
@@ -220,13 +222,22 @@ class CheckoutSection extends StatelessWidget {
                 GestureDetector(
                   onTap: () {
                     // Implement checkout functionality
-                    print("Proceed to Checkout");
+                    // Navigator.push(context, MaterialPageRoute(builder: (context) => UploadPrescriptionPage(),));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => SalesOrderPage(
+                      productData:cartItems,
+                      totalAmount:"$totalPrice" ,),)
+                    );
                   },
-                  child: Container(
-                    decoration: BoxDecoration(color: d1blue, borderRadius: BorderRadius.circular(16)),
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                    child: Text('Checkout', style: TextStyle(color: Colors.white, fontSize: 16)),
-                  ),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: pharmacyBlue
+                    ),
+                      onPressed: (){
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => SalesOrderPage(
+                          productData:cartItems,
+                          totalAmount:"$totalPrice" ,),)
+                        );
+                      }, child: Text('checkout',style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),))
                 )
               ],
             ),

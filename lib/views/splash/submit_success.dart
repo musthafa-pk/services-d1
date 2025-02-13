@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:services/homePage.dart';
-import 'package:services/menuPage.dart';
+import 'package:doctor_one/Dr1/bottomBar.dart';
+import 'package:doctor_one/homePage.dart';
+import 'package:doctor_one/menuPage.dart';
 
 class SubmitSuccess extends StatefulWidget {
   const SubmitSuccess({super.key});
@@ -19,7 +20,7 @@ class _SubmitSuccessState extends State<SubmitSuccess> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => Menupage(), // Replace with your actual HomePage widget
+          builder: (context) => DroneBottomNavigation(pageindx: 0,), // Replace with your actual HomePage widget
         ),
       );
     });

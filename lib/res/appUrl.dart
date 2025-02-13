@@ -1,50 +1,65 @@
 class AppUrl{
 
-  static String G_MAP_KEY = "AIzaSyB--h2bl_kZ_p1FJlRVApPhDziQDkm_gmw" ;
+  // static String baseUrl                  = "http://localhost:3003/";
 
-  // static geocodeUrl = "https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}";
+  static String G_MAP_KEY                   = "AIzaSyB--h2bl_kZ_p1FJlRVApPhDziQDkm_gmw" ;
 
-  static var baseUrl                 =   'http://13.232.117.141:3003/';
+  // static geocodeUrl                      = "https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}";
+
+  // static var baseUrl                     =   'http://13.232.117.141:3003/';
+  static const baseUrl                      = 'https://test.apis.dr1.co.in/';
+
+
+  // <<<<<<<<<<<<<<<<services>>>>>>>>>>>>>>>>>>>>>>>>>
+
   // bh
   static String hospitalasistenquiry        =   baseUrl+'services/addhospitalassistenquiry';
   static String hospitalasistenquiryData    =   baseUrl+'services/addhospitalassist';
   // ab
-  static String addhomeservice    =   baseUrl+'services/addhomeservice';
-  static String addhomeServiceenquiry    =   baseUrl+'services/addhomeServiceenquiry';
+  static String addhomeservice              =   baseUrl+'services/addhomeservice';
+  static String addhomeServiceenquiry       =   baseUrl+'services/addhomeServiceenquiry';
 
-  static String physiotherapyenquiry    =   baseUrl+'services/physiotherapyenquiry';
-  static String addphysiotherapy    =   baseUrl+'services/addphysiotherapy';
+  static String physiotherapyenquiry        =   baseUrl+'services/physiotherapyenquiry';
+  static String addphysiotherapy            =   baseUrl+'services/addphysiotherapy';
+  static String gethospitals                =   baseUrl+'hospital/list';
+  static String getserviceenquiries         =   baseUrl+'services/myorders';
 
 
-  // doctor one urls
+  // <<<<<<<<<<<<<<<<services>>>>>>>>>>>>>>>>>>>>>>>>>
 
-  static String getProfile = baseUrl+'user/getprofile';
 
-  static String edituser = baseUrl+'user/edituser';
+  // <<<<<<<<<<<<<<<<<<<<<<<<<<<doctor one urls>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-  static String userLogin = baseUrl+'user/userlogin';
+  static String getProfile          = baseUrl+'user/getprofile';
 
-  static String addusers = baseUrl+'user/addusers';
+  static String edituser            = baseUrl+'user/edituser';
 
-  static String getCart = baseUrl+'pharmacy/getCart';
+  static String userLogin           = baseUrl+'user/userlogin';
 
-  static String addToCart = baseUrl+'pharmacy/addToCart';
+  static String addusers            = baseUrl+'user/addusers';
 
-  static String removeFromCart = baseUrl+'pharmacy/removeFromCart';
+  static String getCart             = baseUrl+'pharmacy/getCart';
 
-  static String getproducts = baseUrl+'pharmacy/getproducts';
+  static String addToCart           = baseUrl+'pharmacy/addToCart';
 
-  static String products = baseUrl+'product/products';
+  static String removeFromCart      = baseUrl+'pharmacy/removeFromCart';
 
-  static String myorders = baseUrl+'pharmacy/myorders';
+  static String getproducts         = baseUrl+'pharmacy/getproducts';
 
-  static String singleProduct = baseUrl+'pharmacy/getproductdetail';
+  static String products            = baseUrl+'product/products';
 
-  static String allProduct = baseUrl+'product/products';
+  static String myorders            = baseUrl+'pharmacy/myorders';
+
+  static String singleProduct       = baseUrl+'pharmacy/getproductdetail';
+
+  static String allProduct          = baseUrl+'product/products';
   static String allProduct_LoggedIn = baseUrl+'product/productsApp';
 
-  static String productCategory = baseUrl+'product/getcategory';
+  static String productCategory     = baseUrl+'product/getcategory';
 
-  static String salesOrder = baseUrl+'pharmacy/salesorder';
+  static String salesOrder          = baseUrl+'pharmacy/salesorder';
 
+
+  // <<<<<<<<<<<<<<<<<<<<<<<<<<<doctor one urls>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 }
+

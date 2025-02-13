@@ -1,12 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:services/constants/constants.dart';
+
+import '../constants/constants.dart';
 
 class OrderTrackingPage extends StatelessWidget {
   final Map<String, dynamic> orderData;
 
   OrderTrackingPage({required this.orderData});
+
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +29,7 @@ class OrderTrackingPage extends StatelessWidget {
               SizedBox(height: 16),
               OrderStatus(statusDetails: orderData['statusDetails']),
               Divider(),
-              OrderDetails(salesList: orderData['sales_list'] ?? []),
+              OrderDetails(orderData:orderData,salesList: orderData['sales_list'] ?? []),
               Divider(),
               AddressDetails(orderData: orderData),
             ],
@@ -82,9 +84,11 @@ class OrderStep extends StatelessWidget {
 }
 
 class OrderDetails extends StatelessWidget {
+  final Map<String, dynamic> orderData;
   final List<dynamic> salesList;
 
-  OrderDetails({required this.salesList});
+
+  OrderDetails({required this.orderData,required this.salesList});
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +104,11 @@ class OrderDetails extends StatelessWidget {
           images: item['generic_prodid']['images'],
         )),
         SizedBox(height: 10),
-        OrderSummary(totalAmount: salesList.fold(0, (sum, item) => sum + int.parse(item['net_amount'] ?? '0'))),
+        OrderSummary(
+          newtotalAmount: int.parse(orderData['total_amount'].toString()),
+            totalAmount: salesList.fold(0, (sum, item) => sum + int.parse(item['net_amount'] ?? '0'),
+
+        )),
       ],
     );
   }
@@ -210,8 +218,9 @@ class _OrderItemState extends State<OrderItem> {
 
 class OrderSummary extends StatelessWidget {
   final int totalAmount;
+  final int newtotalAmount;
 
-  OrderSummary({required this.totalAmount});
+  OrderSummary({required this.totalAmount,required this.newtotalAmount});
 
   @override
   Widget build(BuildContext context) {
@@ -224,7 +233,7 @@ class OrderSummary extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SummaryRow("Total Amount", "₹$totalAmount", isBold: true),
+          SummaryRow("Total Amount", "₹$totalAmount",'$newtotalAmount', isBold: true),
         ],
       ),
     );
@@ -234,9 +243,9 @@ class OrderSummary extends StatelessWidget {
 class SummaryRow extends StatelessWidget {
   final String title;
   final String value;
+  final String newValue;
   final bool isBold;
-
-  SummaryRow(this.title, this.value, {this.isBold = false});
+  SummaryRow(this.title, this.value,this.newValue, {this.isBold = false});
 
   @override
   Widget build(BuildContext context) {
@@ -246,7 +255,8 @@ class SummaryRow extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(title, style: TextStyle(fontWeight: isBold ? FontWeight.bold : FontWeight.normal)),
-          Text(value, style: TextStyle(fontWeight: isBold ? FontWeight.bold : FontWeight.normal)),
+          // Text(value, style: TextStyle(fontWeight: isBold ? FontWeight.bold : FontWeight.normal)),
+          Text('${int.parse(newValue.toString())}', style: TextStyle(fontWeight: isBold ? FontWeight.bold : FontWeight.normal)),
         ],
       ),
     );

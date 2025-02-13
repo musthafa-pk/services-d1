@@ -1,8 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:services/constants/constants.dart';
+import 'package:doctor_one/constants/constants.dart';
+import 'package:doctor_one/constants/widgets/widgetsfordoctor1.dart';
 
-class LocationPage extends StatelessWidget {
-  const LocationPage({Key? key}) : super(key: key);
+class LocationPage extends StatefulWidget {
+   LocationPage({Key? key}) : super(key: key);
+
+  @override
+  State<LocationPage> createState() => _LocationPageState();
+}
+
+class _LocationPageState extends State<LocationPage> {
+  TextEditingController locationController = TextEditingController();
+
+  TextEditingController pincodeController = TextEditingController();
+  List<Map<String, dynamic>> locationAddress = [];
 
   @override
   Widget build(BuildContext context) {
@@ -24,44 +35,53 @@ class LocationPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 40),
-              const Text(
-                'Location',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.black,
-                ),
-              ),
+              // const Text(
+              //   'Location',
+              //   style: TextStyle(
+              //     fontSize: 16,
+              //     color: Colors.black,
+              //   ),
+              // ),
               const SizedBox(height: 8),
-              TextField(
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: primaryColor2,
-                  hintText: 'Enter location',
-                  suffixIcon: Icon(
-                    Icons.location_on,
-                    color: Colors.grey.shade700,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(
-                      color: primaryColor,
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(
-                      color:primaryColor,
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(
-                      color: primaryColor,
-                      width: 2,
-                    ),
-                  ),
-                ),
-              ),
+              DroneAppWidgets.buildGooglePlacesTextField(
+                  label: 'Location',
+                  addressController: locationController,
+                  pincodeController: pincodeController,
+                  onAddressSelected: (selectedAddress){
+                    setState(() {
+                      locationAddress.add(selectedAddress);
+                    });
+                  }),
+              // TextField(
+              //   decoration: InputDecoration(
+              //     filled: true,
+              //     fillColor: primaryColor2,
+              //     hintText: 'Enter location',
+              //     suffixIcon: Icon(
+              //       Icons.location_on,
+              //       color: Colors.grey.shade700,
+              //     ),
+              //     border: OutlineInputBorder(
+              //       borderRadius: BorderRadius.circular(8),
+              //       borderSide: BorderSide(
+              //         color: primaryColor,
+              //       ),
+              //     ),
+              //     enabledBorder: OutlineInputBorder(
+              //       borderRadius: BorderRadius.circular(8),
+              //       borderSide: BorderSide(
+              //         color:primaryColor,
+              //       ),
+              //     ),
+              //     focusedBorder: OutlineInputBorder(
+              //       borderRadius: BorderRadius.circular(8),
+              //       borderSide: BorderSide(
+              //         color: primaryColor,
+              //         width: 2,
+              //       ),
+              //     ),
+              //   ),
+              // ),
               const Spacer(),
               SizedBox(
                 width: double.infinity,

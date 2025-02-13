@@ -1,12 +1,13 @@
 import 'dart:convert';
+import 'package:doctor_one/res/appUrl.dart';
+import 'package:doctor_one/utils/utils.dart';
+import 'package:doctor_one/views/gender.dart';
+import 'package:doctor_one/views/mobility.dart';
 import 'package:flutter/material.dart';
-import 'package:services/constants/constants.dart';
-import 'package:services/res/appUrl.dart';
-import 'package:services/utils/utils.dart';
-import 'package:services/views/gender.dart';
 import 'package:http/http.dart' as http;
-import 'package:services/views/mobility.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'constants/constants.dart';
 
 class Homepage extends StatefulWidget {
   final String type;
@@ -25,14 +26,19 @@ class _HomepageState extends State<Homepage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   Future<void> postPatientData(String name, String contactNo,String type) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    int? userId = preferences.getInt('userId');
     String apiUrl = AppUrl.hospitalasistenquiry; // Replace with your API endpoint
     String apiUrl2 = AppUrl.addhomeServiceenquiry; // Replace with your API endpoint
     String apiUrl3 = AppUrl.physiotherapyenquiry; // Replace with your API endpoint
-    final Map<String, String> requestBody = {
-      "patient_name": name,
-      "patient_contact_no": contactNo,
+    final Map<String, dynamic> requestBody = {
+      "customer_id":int.parse(userId.toString()),
+      "patient_name": "$name",
+      "patient_contact_no": "$contactNo",
+      "patient_contact_no": "$contactNo",
     };
-
+    print('dddd$requestBody');
+    print('dddd${type=='A' ?apiUrl2:type == 'B' ? apiUrl :apiUrl3}');
     try {
       final response = await http.post(
         Uri.parse(type=='A' ?apiUrl2:type == 'B' ? apiUrl :apiUrl3 ),
@@ -45,14 +51,14 @@ class _HomepageState extends State<Homepage> {
       if (response.statusCode == 200) {
         var responseData = jsonDecode(response.body);
         print('response Data :${responseData}');
-        int userId = int.parse(responseData['data']['id'].toString()); // Extract user_id from the response
-        print('ssss:$userId');
+        int serviceID = int.parse(responseData['data']['id'].toString()); // Extract user_id from the response
+        print('ssss:$serviceID');
         // Store user_id in SharedPreferences
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setInt('user_id', userId);
+        await prefs.setInt('service_id', serviceID);
         await prefs.setString('userName', name);
         await prefs.setString('userPhone', contactNo);
-        print('stored data is :${prefs.getInt('user_id')}');
+        print('stored data is :${prefs.getInt('service_id')}');
         print('stored data is :${prefs.getString('userName')}');
         print('stored data is :${prefs.getString('userPhone')}');
 

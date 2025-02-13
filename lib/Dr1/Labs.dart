@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:services/constants/constants.dart';
+
+import '../constants/constants.dart';
 
 class LabsScreen extends StatelessWidget {
   @override
@@ -57,7 +58,6 @@ class LabsScreen extends StatelessWidget {
                 ],
               ),
             ),
-
             // Health Concern Tests Section
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),

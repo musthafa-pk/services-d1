@@ -74,10 +74,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Checkout")),
+      appBar: AppBar(
+        elevation: 0,
+          backgroundColor: Colors.white,
+          title: Text("Checkout")),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(

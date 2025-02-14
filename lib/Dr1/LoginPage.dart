@@ -52,7 +52,7 @@ class _DroneLoginpageState extends State<DroneLoginpage> {
           await prefs.setString('accessToken', responseData['accessToken']);
           await prefs.setString('refreshToken', responseData['refreshToken']);
           await prefs.setInt('userId', responseData['userId']);
-          await prefs.setString('username', responseData['user_name']);
+          await prefs.setString('userName', responseData['user_name']);
           await prefs.setString('userType', responseData['userType']);
 
           // ScaffoldMessenger.of(context).showSnackBar(
@@ -89,12 +89,15 @@ class _DroneLoginpageState extends State<DroneLoginpage> {
         content: Text("Do you really want to exit?"),
         actions: [
           TextButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: pharmacyBlue
+            ),
             onPressed: () => Navigator.of(context).pop(false), // Stay in app
-            child: Text("No"),
+            child: Text("No",style: TextStyle(color: Colors.black),),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true), // Exit app
-            child: Text("Yes"),
+            child: Text("Yes",style: TextStyle(color: Colors.black),),
           ),
         ],
       ),

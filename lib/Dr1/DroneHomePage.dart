@@ -1,11 +1,15 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:doctor_one/Dr1/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants/constants.dart';
 import '../homePage.dart';
 import '../medOne/splash screen/MainSplashScreen.dart';
+import '../res/appUrl.dart';
+import 'package:http/http.dart' as http;
 
 class Dronehomepage extends StatefulWidget {
   Dronehomepage({super.key});
@@ -22,6 +26,60 @@ class _DronehomepageState extends State<Dronehomepage> {
   bool isNightTime() {
     int hour = DateTime.now().hour;
     return hour >= 19 || hour < 6; // 7 PM to 6 AM is night
+  }
+
+  Future<UserDetails> getUserData() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    int? userID = preferences.getInt('userId');
+    String url = AppUrl.getProfile;
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: jsonEncode({"userid": userID}),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseData = jsonDecode(response.body);
+
+      if (responseData["success"] == true && responseData["userDetails"] != null) {
+        // Storing user data in SharedPreferences
+        Map<String, dynamic> userDetails = responseData['userDetails'];
+
+        preferences.setInt('userId', userDetails['id']);
+        preferences.setString('userName', userDetails['name'] ?? '');
+        preferences.setString('userPhone', userDetails['phone_no'] ?? '');
+        preferences.setString('userEmail', userDetails['email'] ?? '');
+        preferences.setString('userToken', userDetails['token'] ?? '');
+        preferences.setString('userGoogleID', userDetails['googleId'] ?? '');
+        preferences.setBool('userDailyRoutine', userDetails['daily_routine'] ?? '');
+
+        // Print the stored values
+        print('User ID: ${preferences.getInt('userId')}');
+        print('User Name: ${preferences.getString('userName')}');
+        print('User Phone: ${preferences.getString('userPhone')}');
+        print('User Email: ${preferences.getString('userEmail')}');
+        print('User Token: ${preferences.getString('userToken')}');
+        print('User Google ID: ${preferences.getString('userGoogleID')}');
+        print('User Daily Routine: ${preferences.getBool('userDailyRoutine')}');
+
+        // Return user details as a UserDetails object
+        return UserDetails.fromJson(userDetails);
+      } else {
+        throw Exception("Failed to load user details");
+      }
+    } else {
+      throw Exception("Failed to load data");
+    }
+  }
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getUserData();
   }
 
   @override

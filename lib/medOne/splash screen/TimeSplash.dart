@@ -1,10 +1,12 @@
 import 'package:doctor_one/constants/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Constants/AppColors.dart';
 import '../MedOneConstants.dart';
 import '../MedOneWidgets/customWidgets.dart';
+import '../View/CreatingProfile/Adding medicine one.dart';
 import '../View/CreatingProfile/DailyRoutine.dart';
 import '../View/CreatingProfile/pastOrder.dart';
 
@@ -179,9 +181,18 @@ class _TimesplashState extends State<Timesplash> {
           ),
           SizedBox(height: 12),
           // "Add Medication" button
-          Dronewidgets.mainButton(title: 'Add Medication', onPressed: (){
+          Dronewidgets.mainButton(title: 'Add Medication', onPressed: ()async{
+            SharedPreferences prefrences = await SharedPreferences.getInstance();
+            bool? isRoutine = prefrences.getBool('userDailyRoutine');
+            print('isRoutine:$isRoutine');
+            if(isRoutine!){
+              Navigator.push(context, MaterialPageRoute(builder: (context) => AddingMedicineone()));
+            }else{
+              Navigator.push(context, MaterialPageRoute(builder: (context) => DailyRoutine(),));
+            }
+
             // Navigator.push(context, MaterialPageRoute(builder: (context) => AddingMedicineone()));
-            Navigator.push(context, MaterialPageRoute(builder: (context) => DailyRoutine(),));
+            // Navigator.push(context, MaterialPageRoute(builder: (context) => DailyRoutine(),));
 
           },
             textColor: Colors.black

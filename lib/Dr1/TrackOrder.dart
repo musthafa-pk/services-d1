@@ -14,6 +14,7 @@ class OrderTrackingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
         title: Text("Track Orders"),
       ),
       body: SingleChildScrollView(

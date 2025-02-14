@@ -137,6 +137,9 @@ class _DroneBottomNavigationState extends State<DroneBottomNavigation> {
         content: Text("Do you want to exit the app?"),
         actions: [
           TextButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: pharmacyBlue
+            ),
             onPressed: () => Navigator.of(context).pop(false),
             child: Text("No"),
           ),

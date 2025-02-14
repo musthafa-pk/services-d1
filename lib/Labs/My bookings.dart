@@ -83,7 +83,6 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
               return InkWell(
                 onTap: () {
 
-                  print('www${int.parse(booking['order_id'].toString())}');
                   Navigator.push(context, MaterialPageRoute(builder: (context) => BookingDetailsScreen(orderId: int.parse(booking['order_id'].toString()),),));
                 },
                 child: Container(

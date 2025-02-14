@@ -369,8 +369,6 @@
 //   }
 // }
 
-
-
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -378,7 +376,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../constants/constants.dart';
 import '../res/appUrl.dart';
 import '../utils/utils.dart';
@@ -406,6 +403,7 @@ class _UploadPrescriptionPageState extends State<UploadPrescriptionPage> {
   File? prescriptionImage;
   bool isLoading = false;
   bool isLoadingLocaiton = false;
+
 
   // Function to pick an image
   Future<void> pickImage() async {
@@ -437,7 +435,7 @@ class _UploadPrescriptionPageState extends State<UploadPrescriptionPage> {
 
     try {
       // Adding form fields
-      String locationAddressJson = jsonEncode(locationAddress);
+      String locationAddressJson = jsonDecode(locationAddress as String);
       request.fields.addAll({
         'name': nameController!.text,
         'contact_no': contactController!.text,
@@ -595,9 +593,15 @@ class _UploadPrescriptionPageState extends State<UploadPrescriptionPage> {
   Future<void>getUserData()async{
     SharedPreferences preferences = await SharedPreferences.getInstance();
     nameController!.text = preferences.getString('userName')!;
-    contactController!.text = preferences.getString('phoneNumber')!;
+    contactController!.text = preferences.getString('userPhone')!;
   }
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getUserData();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

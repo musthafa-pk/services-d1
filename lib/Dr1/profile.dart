@@ -3,7 +3,6 @@ import 'package:doctor_one/Labs/My%20bookings.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/constants.dart';
 import '../res/appUrl.dart';
@@ -216,6 +215,7 @@ class _DrOneProfileState extends State<DrOneProfile> {
                       child: OutlinedButton(
                         onPressed: () {
                           Util.logout(context);
+
                         },
                         style: OutlinedButton.styleFrom(
                           foregroundColor:pharmacyBlue,

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:doctor_one/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:doctor_one/res/medOneUrls.dart';
@@ -28,7 +29,7 @@ class _MedicineListPastorderState extends State<MedicineListPastorder> {
 
   Future<void> fetchMedicineList() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    int? userID = preferences.getInt('userID');
+    int? userID = preferences.getInt('userId');
     // final String apiUrl = "http://13.232.117.141:3003/medone/getMedicineForSchedule";
     final String apiUrl = MedOneUrls.getCompleteMedicine;
     final Map<String, dynamic> requestBody = {
@@ -71,7 +72,7 @@ class _MedicineListPastorderState extends State<MedicineListPastorder> {
                 "name": medicine['name'], // Medicine name
                 "date": item['startDate'], // Start date from the response
                 "no_of_days": item['no_of_days'], // Number of days from the response
-                "image": "assets/pill.png", // Default image
+                "image": "assets/medone/pill.png", // Default image
               };
             }).toList();
 
@@ -228,7 +229,7 @@ class _MedicineListPastorderState extends State<MedicineListPastorder> {
 
     // Ensure medicineIds contains the IDs of selected medicines
     final Map<String, dynamic> requestBody = {
-      "userId": int.parse(userId.toString()),
+      "userId":userId,
       "medicineIds": medicineIds, // Pass as list
     };
 
@@ -368,7 +369,7 @@ class _MedicineListPastorderState extends State<MedicineListPastorder> {
                         },
                       )
                           :  Image.asset(
-                        'assets/icons/multiSelect.png',
+                        'assets/medone/icons/multiSelect.png',
                         height: 30,
                         width: 30,
                       ),
@@ -400,7 +401,7 @@ class _MedicineListPastorderState extends State<MedicineListPastorder> {
                                   print(medicine['id']);
                                 },
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.primaryColor,
+                                  backgroundColor:pharmacyBlue,
                                   shape: const StadiumBorder(),
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 16, vertical: 8),
@@ -411,7 +412,7 @@ class _MedicineListPastorderState extends State<MedicineListPastorder> {
                                 child: const Text(
                                   'Schedule',
                                   style: TextStyle(
-                                      color: Colors.white, fontSize: 12),
+                                      color: Colors.black, fontSize: 12),
                                 ),
                               ),
                             ],

@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'package:doctor_one/Dr1/bottomBar.dart';
+import 'package:doctor_one/res/appUrl.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-
-
 import 'Lab Homepage.dart';
 import 'LabUrl.dart';
 
@@ -60,6 +61,8 @@ class _CartScreenState extends State<CartScreen> {
     }
   }
 
+
+
   void _showPatientDetailsDialog() {
     TextEditingController nameController = TextEditingController(text: patientName);
     TextEditingController dobController = TextEditingController(text: patientDob);
@@ -67,6 +70,7 @@ class _CartScreenState extends State<CartScreen> {
     TextEditingController phoneController = TextEditingController(text: patientPhone);
     TextEditingController doctorController = TextEditingController(text: doctorName);
     TextEditingController remarksController = TextEditingController(text: remarks);
+
 
     showDialog(
       context: context,
@@ -79,7 +83,8 @@ class _CartScreenState extends State<CartScreen> {
               children: [
                 _buildTextField("Patient Name", nameController),
                 _buildDatePickerField("Date of Birth", dobController, context),
-                _buildTextField("Gender", genderController),
+                // _buildTextField("Gender", genderController),
+                _buildDropdown("Select Gender", genderController, ["Male", "Female", "Other"]),
                 _buildTextField("Phone Number", phoneController),
                 _buildTextField("Doctor Name", doctorController),
                 _buildTextField("Remarks", remarksController),
@@ -163,6 +168,77 @@ class _CartScreenState extends State<CartScreen> {
     TextEditingController lngController = TextEditingController(text: longitude);
     TextEditingController contactController = TextEditingController(text: contactNumber);
 
+    void _fetchLocationDetails(String placeId) async {
+      try {
+        List<Location> locations = await locationFromAddress(addressController.text);
+        if (locations.isNotEmpty) {
+          Location loc = locations.first;
+          latController.text = loc.latitude.toString();
+          lngController.text = loc.longitude.toString();
+
+          // Fetch pincode
+          List<Placemark> placemarks = await placemarkFromCoordinates(loc.latitude, loc.longitude);
+          if (placemarks.isNotEmpty) {
+            pincodeController.text = placemarks.first.postalCode ?? "";
+          }
+        }
+      } catch (e) {
+        print("Error fetching location details: $e");
+      }
+    }
+
+    Widget _buildLocationSearchField(
+        String label, TextEditingController controller) {
+      return Padding(
+        padding: const EdgeInsets.all(5.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Colors.grey[700],
+              ),
+            ),
+            SizedBox(height: 5), // Space between label and text field
+            Container(
+              // decoration: BoxDecoration(
+              //   borderRadius: BorderRadius.circular(30),
+              //   color: Colors.grey[100], // Light background
+              //   border: Border.all(color: LabColors.primaryColor, width: 1),
+              // ),
+              child: GooglePlaceAutoCompleteTextField(
+                textEditingController: controller,
+                googleAPIKey: AppUrl.G_MAP_KEY,
+                debounceTime: 800,
+                isLatLngRequired: true,
+                inputDecoration: InputDecoration(
+                  hintText: "Search Location",
+                  contentPadding: EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+                ),
+                itemClick: (prediction) {
+                  controller.text = prediction.description!;
+                  latController.text = prediction.lat.toString();
+                  lngController.text = prediction.lng.toString();
+                  _fetchLocationDetails(prediction.placeId!);
+                  setState(() {}); // Refresh UI after selection
+                },
+                getPlaceDetailWithLatLng: (prediction) {
+                  controller.text = prediction.description!;
+                  latController.text = prediction.lat.toString();
+                  lngController.text = prediction.lng.toString();
+                  _fetchLocationDetails(prediction.placeId!);
+                },
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+
     showDialog(
       context: context,
       builder: (context) {
@@ -172,11 +248,43 @@ class _CartScreenState extends State<CartScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                _buildTextField("Address", addressController),
-                _buildTextField("Pincode", pincodeController),
-                _buildTextField("Latitude", latController),
-                _buildTextField("Longitude", lngController),
+                // _buildTextField("Address", addressController),
+                // _buildTextField("Pincode", pincodeController),
+                // _buildTextField("Latitude", latController),
+                // _buildTextField("Longitude", lngController),
                 // _buildTextField("Contact Number", contactController),
+                // Padding(
+                //   padding: const EdgeInsets.all(8.0),
+                //   child: GooglePlaceAutoCompleteTextField(
+                //     textEditingController: addressController,
+                //     googleAPIKey: AppUrl.G_MAP_KEY,
+                //     inputDecoration: InputDecoration(hintText: "Search Location"),
+                //     debounceTime: 800,
+                //     isLatLngRequired: true,
+                //
+                //     // 🔹 Use itemClick to update addressController manually
+                //     itemClick: (prediction) {
+                //       addressController.text = prediction.description!;
+                //       latController.text = prediction.lat.toString();
+                //       lngController.text = prediction.lng.toString();
+                //       _fetchLocationDetails(prediction.placeId!);
+                //       setState(() {}); // Refresh UI after selection
+                //     },
+                //
+                //     getPlaceDetailWithLatLng: (prediction) {
+                //       // This might not be necessary anymore after itemClick fix
+                //       addressController.text = prediction.description!;
+                //       latController.text = prediction.lat.toString();
+                //       lngController.text = prediction.lng.toString();
+                //       _fetchLocationDetails(prediction.placeId!);
+                //     },
+                //   ),
+                // ),
+                _buildLocationSearchField("Search Address", addressController),
+
+                // _buildTextField("Pincode", pincodeController),
+                // _buildTextField("Latitude", latController),
+                // _buildTextField("Longitude", lngController),
               ],
             ),
           ),
@@ -232,6 +340,46 @@ class _CartScreenState extends State<CartScreen> {
       ),
     );
   }
+
+  Widget _buildDropdown(String label, TextEditingController controller, List<String> items) {
+    return Padding(
+      padding: const EdgeInsets.all(5.0),
+      child: DropdownButtonFormField<String>(
+        value: controller.text.isNotEmpty ? controller.text : null,
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: Colors.grey[700],
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+            borderSide: BorderSide(color: LabColors.primaryColor),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+            borderSide: BorderSide(color: LabColors.primaryColor, width: 2),
+          ),
+          filled: true,
+          fillColor: Colors.grey[100],
+          contentPadding: EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+        ),
+        items: items.map((String item) {
+          return DropdownMenuItem<String>(
+            value: item,
+            child: Text(item),
+          );
+        }).toList(),
+        onChanged: (String? newValue) {
+          controller.text = newValue ?? '';
+        },
+      ),
+    );
+  }
+
+
+
 
 
   Future<void> _sendDataToBackend() async {

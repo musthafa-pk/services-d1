@@ -1,5 +1,6 @@
 import 'package:doctor_one/res/appUrl.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -26,8 +27,6 @@ class _LabHomePageState extends State<LabHomePage> {
 
   late Future<List<Package>> futurePackages;
   late Future<List<LabPackage>> futureLabs;
-  String? locationName;
-  String? pincode;
 
   int? _cartItemCount;
 
@@ -37,7 +36,7 @@ class _LabHomePageState extends State<LabHomePage> {
     super.initState();
     futurePackages = fetchPackages();
     futureLabs = fetchLabs(); // Initialize the futureLabs
-    // _fetchLocationDetails();
+    _fetchLocationAndLabs();
   }
   Set<String> _cartItems = {}; // Track which items are in the cart
 
@@ -51,65 +50,47 @@ class _LabHomePageState extends State<LabHomePage> {
     {'label': 'Wellness', 'imagePath': 'assets/droneicons/sex-education.png'},
   ];
 
-  // Future<void> _fetchLocationDetails() async {
-  //   try {
-  //     Position position = await _determinePosition();
-  //     Map<String, String> locationData =
-  //     await _getAddressFromLatLng(position.latitude, position.longitude);
-  //
-  //     setState(() {
-  //       locationName = locationData['location'];
-  //       pincode = locationData['pincode'];
-  //     });
-  //   } catch (e) {
-  //     print("Error getting location: $e");
-  //   }
-  // }
+  String? pincode = 'Pincode';
 
-  /// Determines current position and requests permission if necessary
-  // Future<Position> _determinePosition() async {
-  //   LocationPermission permission = await Geolocator.checkPermission();
-  //   if (permission == LocationPermission.denied) {
-  //     permission = await Geolocator.requestPermission();
-  //     if (permission == LocationPermission.deniedForever) {
-  //       throw Exception("Location permissions are permanently denied.");
-  //     }
-  //   }
-  //   return await Geolocator.getCurrentPosition();
-  // }
+  Future<void> _getLocation() async {
+    try {
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
+          return;
+        }
+      }
 
-  /// Fetches address details (location name & pincode) from Google Maps API
-  // Future<Map<String, String>> _getAddressFromLatLng(double lat, double lon) async {
-  //   final url = Uri.parse(
-  //       "https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$lon&key=${AppUrl.G_MAP_KEY}");
-  //
-  //   final response = await http.get(url);
-  //
-  //   if (response.statusCode == 200) {
-  //     final data = json.decode(response.body);
-  //     if (data['status'] == 'OK') {
-  //       String? foundLocation;
-  //       String? foundPincode;
-  //
-  //       for (var result in data['results']) {
-  //         for (var component in result['address_components']) {
-  //           if (component['types'].contains('locality')) {
-  //             foundLocation = component['long_name']; // City or locality
-  //           }
-  //           if (component['types'].contains('postal_code')) {
-  //             foundPincode = component['long_name']; // Pincode
-  //           }
-  //         }
-  //       }
-  //
-  //       return {
-  //         'location': foundLocation ?? "Unknown",
-  //         'pincode': foundPincode ?? "Unknown"
-  //       };
-  //     }
-  //   }
-  //   return {'location': "Unknown", 'pincode': "Unknown"};
-  // }
+      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
+
+      if (placemarks.isNotEmpty) {
+        Placemark place = placemarks[0];
+        setState(() {
+          locationName = place.locality ?? "Unknown"; // Fetching city/locality name
+          pincode = place.postalCode ?? "N/A"; // Fetching pincode
+        });
+
+        print("Updated Location: $locationName, Pincode: $pincode"); // Debugging log
+      }
+    } catch (e) {
+      print("Error getting location: $e");
+    }
+  }
+
+
+  Future<void> _fetchLocationAndLabs() async {
+    await _getLocation(); // Ensure pincode is updated
+    await Future.delayed(Duration(seconds: 3));
+
+    if (pincode != null && pincode != 'Pincode') {
+      await fetchLabs();
+    } else {
+      print("Pincode not updated, skipping fetchLabs");
+    }
+  }
+
 
   Future<int> fetchCartCount() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
@@ -247,13 +228,16 @@ class _LabHomePageState extends State<LabHomePage> {
   }
 
   Future<List<LabPackage>> fetchLabs() async {
+    print('sss:$pincode');
     final response = await http.post(
       Uri.parse(LabUrl.getnearestLabs),
       headers: {'Content-Type': 'application/json'},
-      body: json.encode({"pincode": "${pincode}"}), // You can update the pincode dynamically
+      body: json.encode({"pincode": "${676305}"}), // You can update the pincode dynamically
     );
-
+    print('passing....${json.encode({"pincode": "${pincode}"})}');
+    print('its ssddd:${response.body}');
     if (response.statusCode == 200) {
+      print('its ss:${response.body}');
       Map<String, dynamic> data = json.decode(response.body);
 
       // Check if the API returned success
@@ -290,6 +274,9 @@ class _LabHomePageState extends State<LabHomePage> {
     }
   }
 
+  String locationName = 'Fetching...';
+
+
   @override
   Widget build(BuildContext context) {
 
@@ -312,31 +299,18 @@ class _LabHomePageState extends State<LabHomePage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  InkWell(
-                    onTap: () {
-                      // _determinePosition();
-                    },
-                    child: Padding(
-                      padding: EdgeInsets.all(10.0),
-                      child: Row(
-                        children: [
-                          Image.asset("assets/droneicons/location.png", width: 30, height: 30),
-                          // Column(
-                          //   mainAxisAlignment: MainAxisAlignment.center,
-                          //   children: [
-                          //     Text(
-                          //       locationName != null ? "Location: $locationName" : "Fetching location...",
-                          //       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                          //     ),
-                          //     SizedBox(height: 10),
-                          //     Text(
-                          //       pincode != null ? "Pincode: $pincode" : "Fetching pincode...",
-                          //       style: TextStyle(fontSize: 16, color: Colors.grey),
-                          //     ),
-                          //   ],
-                          // ),
-                        ],
-                      ),
+                  Padding(
+                    padding: EdgeInsets.all(10.0),
+                    child: Row(
+                      children: [
+                        InkWell(
+                          onTap:_getLocation,
+                            child: Image.asset("assets/droneicons/location.png", width: 30, height: 30)),
+                        Text(
+                          "$locationName,\n$pincode",
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      ],
                     ),
                   ),
                   FutureBuilder<int>(
@@ -544,7 +518,7 @@ class _LabHomePageState extends State<LabHomePage> {
           
               InkWell(
                 onTap: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => MyBookingsScreen(),));
+                  // Navigator.push(context, MaterialPageRoute(builder: (context) => MyBookingsScreen(),));
           
                 },
                 child: Padding(

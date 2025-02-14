@@ -116,6 +116,7 @@ flutter:
     - assets/medone/icons/info (2).png
     - assets/medone/lottie/profiledone.json
     - assets/medone/lottie/profiledone1.json
+    - assets/medone/icons/multiSelect.png
 #    ---------------------------
     - assets/droneicons/booklabtest.png
     - assets/droneicons/popularhealthcheck.png

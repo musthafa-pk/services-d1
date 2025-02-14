@@ -228,7 +228,7 @@ class _AddingMedicineoneState extends State<AddingMedicineone> {
     if (userName.isNotEmpty && userName != 'No user name found') {
       return userName[0].toUpperCase();
     }
-    return '?';
+    return '';
   }
 
   @override

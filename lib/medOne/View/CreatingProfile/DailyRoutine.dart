@@ -70,10 +70,6 @@ class _DailyRoutineState extends State<DailyRoutine> {
         headers: {'Content-Type': 'application/json'},
         body: json.encode(routineData),
       );
-      print(url);
-      print('routtwwww ${routineData}');
-      print('ashannne ${response.body}');
-      print('ashannne ${response.statusCode}');
       if (response.statusCode == 200) {
         
         _showFlushbar("Routine saved successfully!", Colors.green);

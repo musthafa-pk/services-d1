@@ -44,8 +44,9 @@ class _MyOrdersPageState extends State<MyOrdersPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: color1,
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        elevation: 0,
         backgroundColor: Colors.white,
         title: Text("My Orders", style: TextStyle(color: Colors.black)),
         iconTheme: IconThemeData(color: Colors.black),
@@ -123,11 +124,11 @@ class _MyOrdersPageState extends State<MyOrdersPage> {
                     },
                     child: Container(
                       decoration: BoxDecoration(
-                        color: d1blue,
+                        color: pharmacyBlue,
                         borderRadius: BorderRadius.circular(25),
                       ),
                       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 4),
-                      child: Text("Track Order", style: TextStyle(color: Colors.white)),
+                      child: Text("Track Order", style: TextStyle(color: Colors.black)),
                     ),
                   ),
 

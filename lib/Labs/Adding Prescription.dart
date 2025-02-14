@@ -4,6 +4,8 @@ import 'package:doctor_one/Dr1/bottomBar.dart';
 import 'package:doctor_one/constants/constants.dart';
 import 'package:doctor_one/utils/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,6 +27,7 @@ class LabColors {
 }
 class _UploadPrescriptionScreenLabState extends State<UploadPrescriptionScreenLab> {
   final TextEditingController nameController = TextEditingController();
+  final TextEditingController docnameController = TextEditingController();
   final TextEditingController contactController = TextEditingController();
   final TextEditingController landmarkController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
@@ -32,6 +35,8 @@ class _UploadPrescriptionScreenLabState extends State<UploadPrescriptionScreenLa
   final TextEditingController pincodeController = TextEditingController();
   final TextEditingController remarksController = TextEditingController();
   final TextEditingController dobController = TextEditingController(); // For DOB
+  final TextEditingController latController = TextEditingController(); // For DOB
+  final TextEditingController lngController = TextEditingController(); // For DOB
   bool consentGiven = false;
   List<File> _selectedFiles = [];
   String? selectedGender; // For gender selection
@@ -105,12 +110,13 @@ class _UploadPrescriptionScreenLabState extends State<UploadPrescriptionScreenLa
         "remarks": remarksController.text,
         "order_type": "prescription",
         "delivery_location": {
-          "lat":11.7871188,
-          "lng": 75.5320371
+          "lat":latController.text,
+          "lng": lngController.text,
         },
+        // "delivery_location":addressController.text,
         "pincode": int.parse(pincodeController.text), // Convert to int
         "contact_no": contactController.text,
-        "doctor_name": "",
+        "doctor_name": docnameController.text,
         "patientDetails": {
           "dob": dobController.text, // Use selected DOB
           "name": nameController.text,
@@ -121,8 +127,8 @@ class _UploadPrescriptionScreenLabState extends State<UploadPrescriptionScreenLa
           "address": addressController.text,
           "pincode": pincodeController.text,
           "location": {
-            "lat": 11.7871188,
-            "lng": 75.5320371
+            "lat": latController.text,
+            "lng": lngController.text
           }
         }
       }
@@ -174,6 +180,67 @@ class _UploadPrescriptionScreenLabState extends State<UploadPrescriptionScreenLa
     }
   }
 
+  Future<void> _getCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Check if location services are enabled
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Location services are disabled.")),
+      );
+      return;
+    }
+
+    // Check location permission
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Location permission denied.")),
+        );
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Location permission permanently denied. Enable it in settings.")),
+      );
+      return;
+    }
+
+    // Get current position
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+
+    // Reverse geocode to get address details
+    List<Placemark> placemarks = await placemarkFromCoordinates(
+      position.latitude,
+      position.longitude,
+    );
+
+    if (placemarks.isNotEmpty) {
+      Placemark place = placemarks.first;
+      setState(() {
+        addressController.text = "${place.street}, ${place.locality}, ${place.subAdministrativeArea}";
+        districtController.text = place.subAdministrativeArea ?? "";
+        pincodeController.text = place.postalCode ?? "";
+        latController.text = position.latitude.toString();
+        lngController.text = position.longitude.toString();
+      });
+    }
+  }
+
+  void _removeFile(int index) {
+    setState(() {
+      _selectedFiles.removeAt(index);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -194,62 +261,128 @@ class _UploadPrescriptionScreenLabState extends State<UploadPrescriptionScreenLa
             children: [
               _buildTextField(nameController, "Name"),
               _buildTextField(contactController, "Contact Number"),
+              _buildTextField(docnameController, "Doctor Name"),
               _buildTextField(landmarkController, "Nearest landmark"),
 
               // Gender Selection
-              Text("Gender", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              DropdownButton<String>(
-                value: selectedGender,
-                hint: Text("Select Gender"),
-                onChanged: (String? newValue) {
+              // Text("Gender", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              // DropdownButton<String>(
+              //   value: selectedGender,
+              //   hint: Text("Select Gender"),
+              //   onChanged: (String? newValue) {
+              //     setState(() {
+              //       selectedGender = newValue;
+              //     });
+              //   },
+              //   items: <String>['male', 'female', 'other']
+              //       .map<DropdownMenuItem<String>>((String value) {
+              //     return DropdownMenuItem<String>(
+              //       value: value,
+              //       child: Text(value),
+              //     );
+              //   }).toList(),
+              // ),
+
+              _buildDropdown(
+                "Gender",
+                selectedGender,
+                    (String? newValue) {
                   setState(() {
                     selectedGender = newValue;
                   });
                 },
-                items: <String>['male', 'female', 'other']
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
+                ["Male", "Female", "Other"],
               ),
+
+              _buildDatePicker(context, "Date of Birth", dobController, () => _selectDateOfBirth(context)),
 
               // Date of Birth (DOB) Selection
-              Text("Date of Birth", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              InkWell(
-                onTap: () {_selectDateOfBirth(context);} ,
-                child: TextFormField(
-                  controller: dobController,
-                  decoration: InputDecoration(
-                    hintText: "Select Date of Birth",
-                    suffixIcon: IconButton(
-                      icon: Icon(Icons.calendar_today),
-                      onPressed: () => _selectDateOfBirth(context),
-                    ),
-                  ),
-                  readOnly: true, // Prevent manual editing
-                ),
-              ),
+              // Text("Date of Birth", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              // InkWell(
+              //   onTap: () {_selectDateOfBirth(context);} ,
+              //   child: TextFormField(
+              //     controller: dobController,
+              //     decoration: InputDecoration(
+              //       hintText: "Select Date of Birth",
+              //       suffixIcon: IconButton(
+              //         icon: Icon(Icons.calendar_today),
+              //         onPressed: () => _selectDateOfBirth(context),
+              //       ),
+              //     ),
+              //     readOnly: true, // Prevent manual editing
+              //   ),
+              // ),
 
               SizedBox(height: 10),
+              // ElevatedButton(
+              //   onPressed: _pickFiles,
+              //   style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
+              //   child: Text("Upload Prescription (Max 5 Files)", style: TextStyle(color: Colors.white)),
+              // ),
+              //
+              // if (_selectedFiles.isNotEmpty)
+              //   Padding(
+              //     padding: const EdgeInsets.symmetric(vertical: 8.0),
+              //     child: Text("Selected files: ${_selectedFiles.length}"),
+              //   ),
+
               ElevatedButton(
                 onPressed: _pickFiles,
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
                 child: Text("Upload Prescription (Max 5 Files)", style: TextStyle(color: Colors.white)),
               ),
-
               if (_selectedFiles.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: Text("Selected files: ${_selectedFiles.length}"),
+                ),
+              SizedBox(height: 10),
+              // Display selected images
+              if (_selectedFiles.isNotEmpty)
+                Wrap(
+                  spacing: 8.0,
+                  runSpacing: 8.0,
+                  children: _selectedFiles.asMap().entries.map((entry) {
+                    int index = entry.key;
+                    File file = entry.value;
+
+                    return Stack(
+                      alignment: Alignment.topRight,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.file(
+                            file,
+                            width: 80,
+                            height: 80,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        // Delete button
+                        Positioned(
+                          right: 0,
+                          child: GestureDetector(
+                            onTap: () => _removeFile(index),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                shape: BoxShape.circle,
+                              ),
+                              padding: EdgeInsets.all(4),
+                              child: Icon(Icons.close, size: 18, color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  }).toList(),
                 ),
 
               SizedBox(height: 10),
               Row(
                 children: [
                   ElevatedButton.icon(
-                    onPressed: () {},
+                    onPressed: _getCurrentLocation,
                     style: ElevatedButton.styleFrom(backgroundColor: LabColors.primaryColor),
                     icon: Icon(Icons.location_pin, color: Colors.white),
                     label: Text("Use my location", style: TextStyle(color: Colors.white)),
@@ -308,6 +441,78 @@ class _UploadPrescriptionScreenLabState extends State<UploadPrescriptionScreenLa
       ),
     );
   }
+
+  Widget _buildDropdown(String label, String? selectedValue, ValueChanged<String?> onChanged, List<String> items) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 5), // Small gap between label and dropdown
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 12),
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: selectedValue,
+                hint: Text("Select $label"),
+                onChanged: onChanged,
+                items: items.map((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  Widget _buildDatePicker(BuildContext context, String label, TextEditingController controller, VoidCallback onTap) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 5), // Small gap between label and field
+          InkWell(
+            onTap: onTap,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    controller.text.isEmpty ? "Select $label" : controller.text,
+                    style: TextStyle(fontSize: 16, color: Colors.black),
+                  ),
+                  Icon(Icons.calendar_today, color: Colors.grey[700]),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
 }
 
 // import 'package:flutter/material.dart';

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:doctor_one/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -82,23 +83,16 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
         'pincode': pincodeController.text,
 
       });
-
-
-      print('eheeheh:${request.fields}');
-
-
       final response = await request.send();
-      print('hddhhdhhdh:$request');
       final responseBody = await response.stream.bytesToString();
-
-      print('heloo guys:${responseBody}');
 
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(responseBody);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(jsonResponse['message'] ?? "Order placed successfully")),
-        );
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(content: Text(jsonResponse['message'] ?? "Order placed successfully")),
+        // );
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => DroneBottomNavigation(pageindx: 2,),));
+        Util.flushBarSuccessMessage(pharmacyBlue, jsonResponse['message'] ?? "Order placed successfully", context);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Error: ${json.decode(responseBody)['message'] ?? "Failed to place order"}")),
@@ -111,6 +105,12 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
     }
 
     setState(() => isLoading = false);
+  }
+
+  Future<void>getUserData()async{
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    nameController!.text = preferences.getString('userName')!;
+    contactController!.text = preferences.getString('userPhone')!;
   }
 
   //using google map
@@ -181,8 +181,8 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
           final address = data["results"][0]["formatted_address"];
           final components = data["results"][0]["address_components"];
 
-          String pincode = "Not Available";
-          String district = "Not Available";
+          String pincode = "";
+          String district = "";
 
           for (var component in components) {
             if (component["types"].contains("postal_code")) {
@@ -221,13 +221,23 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    getUserData();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(title: Text("Place Sales Order")),
+      appBar: AppBar(
+        elevation: 0,
+          backgroundColor: Colors.white,
+          title: Text("Place Sales Order",style: TextStyle(color: Colors.black),),
+        leading: InkWell(
+          onTap: (){
+            Navigator.pop(context);
+          },
+            child: Icon(Icons.arrow_back,color: Colors.black,)),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -237,129 +247,111 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
               Container(
                 padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: color1,
+                  color: pharmacyBlueLight,
                   borderRadius: BorderRadius.circular(8),
-                  boxShadow: [
-                    BoxShadow(color: Colors.grey.withOpacity(0.3), blurRadius: 5, spreadRadius: 2),
-                  ],
                 ),
                 child: widget.productData != null && widget.productData is List
                     ? Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ...((widget.productData as List).map((product) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 5),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Product Image Carousel
-                    SizedBox(
-                      height:100,
-                      width: 100,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8), // Rounded corners
-                        child: CarouselSlider(
-                          options: CarouselOptions(
-                            height: 100, // Adjust the height of the carousel
-                            enlargeCenterPage: true,
-                            autoPlay: true, // Enable auto-scrolling
-                            viewportFraction: 0.3, // Adjust the number of images visible at a time
-                          ),
-                          items: [
-                            product['images']['image1'],
-                            product['images']['image2'],
-                            product['images']['image3'],
-                            product['images']['image4'],
-                          ].map((imageUrl) {
-                            return Builder(
-                              builder: (BuildContext context) {
-                                return GestureDetector(
-                                  onTap: () {
-                                    // Open image in a larger view when tapped
-                                    showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return Dialog(
-                                          child: Image.network(
-                                            imageUrl ?? 'https://via.placeholder.com/50', // Placeholder if no image
-                                            fit: BoxFit.cover,
-                                          ),
-                                        );
-                                      },
-                                    );
-                                  },
-                                  child: Image.network(
-                                    imageUrl ?? 'https://via.placeholder.com/50', // Placeholder if no image
-                                    width: 50,
-                                    height: 50,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return Icon(Icons.image_not_supported, size: 50, color: Colors.grey);
+                    ...((widget.productData as List).map((product) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 5),
+                        child: ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          leading: SizedBox(
+                            height: 100,
+                            width: 100,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8), // Rounded corners
+                              child: CarouselSlider(
+                                options: CarouselOptions(
+                                  height: 100, // Adjust height
+                                  enlargeCenterPage: true,
+                                  autoPlay: true, // Enable auto-scroll
+                                  viewportFraction: 1.0, // Show one image at a time
+                                ),
+                                items: [
+                                  product['images']['image1'],
+                                  product['images']['image2'],
+                                  product['images']['image3'],
+                                  product['images']['image4'],
+                                ].where((imageUrl) => imageUrl != null).map((imageUrl) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return Dialog(
+                                            child: Image.network(
+                                              imageUrl,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          );
+                                        },
+                                      );
                                     },
-                                  ),
-                                );
-                              },
-                            );
-                          }).toList(),
+                                    child: Image.network(
+                                      imageUrl,
+                                      width: 50,
+                                      height: 50,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) {
+                                        return Icon(Icons.image_not_supported, size: 50, color: Colors.grey);
+                                      },
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ),
+                          title: Text(
+                            product['product_name'] ?? "Unknown Product",
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          ),
+                          subtitle: Text(
+                            "${product['quantity'] ?? '0'} x ₹${product['mrp'] ?? '0.00'}",
+                            style: TextStyle(color: Colors.green, fontSize: 16),
+                          ),
                         ),
-                      ),
+                      );
+                    }).toList()),
+
+                    // Dotted Divider
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      child: Divider(),
                     ),
-                    SizedBox(width: 10), // Space between image and text
-                    // Product Name and Price
-                    Expanded(
-                      child: Text(
-                        product['product_name'] ?? "Unknown Product",
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+
+                    // Total Amount Section
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Total Amount",
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                          ),
+                          Text(
+                            "₹${widget.totalAmount ?? '0.00'}",
+                            style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 18),
+                          ),
+                        ],
                       ),
-                    ),
-                    Text(
-                      "${product['quantity'] ?? '0'} x ",
-                      style: TextStyle(color: Colors.green, fontSize: 16),
-                    ),Text(
-                      "${product['mrp'] ?? '0.00'}",
-                      style: TextStyle(color: Colors.green, fontSize: 16),
                     ),
                   ],
                 )
-
-              );
-            }).toList()),
-
-            // Dotted Divider
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: Divider()
-            ),
-
-            // Total Amount Section
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Total Amount",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                  ),
-                  Text(
-                    "₹${widget.totalAmount ?? '0.00'}",
-                    style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 18),
-                  ),
-                ],
+                    : Text("No product data available"),
               ),
-            ),
-          ],
-        )
-          : Text("No product data available"),
-              ),
+
               SizedBox(height: 10,),
               TextFormField(
                 controller: nameController,
                 decoration: InputDecoration(labelText: "Customer Name",
                     filled: true,
                     border: InputBorder.none,
-                    fillColor: color1),
+                    fillColor: pharmacyBlueLight),
                 validator: (value) =>
                 value!.isEmpty ? "Enter customer name" : null,
               ),
@@ -369,29 +361,40 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
                 decoration: InputDecoration(labelText: "Contact No.",
                     filled: true,
                     border: InputBorder.none,
-                    fillColor: color1),
+                    fillColor: pharmacyBlueLight),
                 keyboardType: TextInputType.phone,
                 validator: (value) =>
                 value!.isEmpty ? "Enter contact number" : null,
               ),
+              SizedBox(height: 10,),
               Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     SizedBox(
                       width: 200,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: color1,
-                        ),
-                        onPressed: isLoadingLocaiton?null:()=>_getCurrentLocation(context),
-                        child: isLoadingLocaiton?Center(child:Text("Fetching...."),):Row(
-                          children: [
-                            Icon(Icons.location_on_outlined, color: d1blue),
-                            Text('Use my location', style: TextStyle(color: d1blue)),
-                          ],
+                      child: InkWell(
+                        onTap: isLoadingLocaiton ? null : () => _getCurrentLocation(context),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                          decoration: BoxDecoration(
+                            color: isLoadingLocaiton ? Colors.grey.shade300 : pharmacyBlueLight,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.location_on_outlined, color: Colors.black),
+                              SizedBox(width: 5), // Space between icon and text
+                              Text(
+                                isLoadingLocaiton ? "Fetching..." : "Use my location",
+                                style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
+
                   ]
               ),
               SizedBox(height: 10,),
@@ -401,7 +404,7 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
                     labelText: "Delivery Address",
                     filled: true,
                     border: InputBorder.none,
-                    fillColor: color1),
+                    fillColor: pharmacyBlueLight),
                 validator: (value) =>
                 value!.isEmpty ? "Enter delivery address" : null,
               ),
@@ -411,7 +414,7 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
                 decoration: InputDecoration(labelText: "City",
                     filled: true,
                     border: InputBorder.none,
-                    fillColor: color1),
+                    fillColor: pharmacyBlueLight),
               ),
               SizedBox(height: 10,),
               TextFormField(
@@ -419,7 +422,7 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
                 decoration: InputDecoration(labelText: "District",
                     filled: true,
                     border: InputBorder.none,
-                    fillColor: color1
+                    fillColor: pharmacyBlueLight
                 ),
               ),
               SizedBox(height: 10,),
@@ -428,7 +431,7 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
                 decoration: InputDecoration(labelText: "Pincode",
                     filled: true,
                     border: InputBorder.none,
-                    fillColor: color1),
+                    fillColor: pharmacyBlueLight),
                 keyboardType: TextInputType.number,
               ),
               SizedBox(height: 10,),
@@ -437,7 +440,7 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
                 decoration: InputDecoration(labelText: "Remarks (Optional)",
                     filled: true,
                     border: InputBorder.none,
-                    fillColor: color1
+                    fillColor: pharmacyBlueLight
                 ),
               ),
               SizedBox(height: 10,),
@@ -446,7 +449,6 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
               SizedBox(height: 10,),
 
               SizedBox(height: 20),
-              SizedBox(height:100 ,),
               InkWell(
                 onTap: isLoading ? null : submitOrder,
                 child: isLoading
@@ -454,13 +456,13 @@ class _SalesOrderPageState extends State<SalesOrderPage> {
                     : Container(
                   width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
-                    color: d1blue,
+                    color: pharmacyBlue,
                     borderRadius: BorderRadius.circular(9)
                   ),
                     child: Padding(
                       padding: const EdgeInsets.only(top: 16.0,bottom: 16.0,left: 16,right: 16),
                       child: Center(child: Text("Submit Order",style: TextStyle(
-                        color: Colors.white
+                        color: Colors.black
                       ),)),
                     )),
               ),
